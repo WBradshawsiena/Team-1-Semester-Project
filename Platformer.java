@@ -1,7 +1,7 @@
 //
 //
-//USE W A S D TO MOVE GREEN SQUARE
-//USE ARROWS TO MOVE RED SQUARE
+//USE W A S D TO MOVE Player 1
+//USE ARROWS TO MOVE Player 2
 //
 //
 import javax.swing.*;
@@ -77,9 +77,9 @@ public class Platformer implements Runnable, KeyListener
             {
                 super.paintComponent(g);
                 g.setColor(player2.color);
-                g.fillRect(player2.x,player2.y,player2.width,player2.height);
+                g.fillRect(player2.x - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height);
                 g.setColor(player1.color);
-                g.fillRect(player1.x,player1.y,player1.width,player1.height);
+                g.fillRect(player1.x - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height);
             }
         };
         panel2 = new JPanel()
@@ -89,9 +89,9 @@ public class Platformer implements Runnable, KeyListener
             {
                 super.paintComponent(g);
                 g.setColor(player2.color);
-                g.fillRect(player1.x,player1.y,player1.width,player1.height);
+                g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
                 g.setColor(player1.color);
-                g.fillRect(player2.x,player2.y,player2.width,player2.height);
+                g.fillRect(player2.x - frame2xOffset, player2.y - frame2yOffset, player2.width, player2.height);
             }
         };
         frame1.setLocation(0,0);
@@ -321,6 +321,40 @@ public class Platformer implements Runnable, KeyListener
                 if(player2.ySpeed < -playerMaxSpeed)
                 {
                     player2.ySpeed = -playerMaxSpeed;
+                }
+                //Player 1 frame offset
+                if(player1.x > 500 + frame1xOffset)
+                {
+                    frame1xOffset += 500;
+                }
+                if(player1.x < 0 + frame1xOffset)
+                {
+                    frame1xOffset -= 500;
+                }
+                if(player1.y > 500 + frame1yOffset)
+                {
+                    frame1yOffset += 500;
+                }
+                if(player1.y < 0 + frame1yOffset)
+                {
+                    frame1yOffset -= 500;
+                }
+                //Player 2 frame offset
+                if(player2.x > 500 + frame2xOffset)
+                {
+                    frame2xOffset += 500;
+                }
+                if(player2.x < 0 + frame2xOffset)
+                {
+                    frame2xOffset -= 500;
+                }
+                if(player2.y > 500 + frame2yOffset)
+                {
+                    frame1yOffset += 500;
+                }
+                if(player2.y < 0 + frame2yOffset)
+                {
+                    frame2yOffset -= 500;
                 }
                 //Update player posistion 
                 player1.x += player1.xSpeed;
