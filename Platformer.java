@@ -23,9 +23,11 @@ public class Platformer implements Runnable, KeyListener
     private static JPanel panel2;
     //private static Color c = Color.GREEN;
     private static int playerSpeed = 2;
+    private static int playerMaxSpeed = 10;
     private static int FPS = 60;
     private static int scale = 500;
     private static int barSize = 28;
+    private static int traction = 1;
     private static JFrame frame1;
     private static JFrame frame2;
     private static boolean w = false;
@@ -105,6 +107,8 @@ public class Platformer implements Runnable, KeyListener
         public String name;
         public int x;
         public int y;
+        public int xSpeed = 0;
+        public int ySpeed = 0;
         public int width;
         public int height;
         public Color color = Color.BLACK;
@@ -211,38 +215,114 @@ public class Platformer implements Runnable, KeyListener
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                //Player 1 keys
                 if(w)
                 {
-                    player1.y -= playerSpeed;
+                    player1.ySpeed -= playerSpeed;
                 }
                 if(a)
                 {
-                    player1.x -= playerSpeed;
+                    player1.xSpeed -= playerSpeed;
                 }
                 if(s)
                 {
-                    player1.y += playerSpeed;
+                    player1.ySpeed += playerSpeed;
                 }
                 if(d)
                 {
-                    player1.x += playerSpeed;
+                    player1.xSpeed += playerSpeed;
                 }
+                //Player 2 keys
                 if(up)
                 {
-                    player2.y -= playerSpeed;
+                    player2.ySpeed -= playerSpeed;
                 }
                 if(left)
                 {
-                    player2.x -= playerSpeed;
+                    player2.xSpeed -= playerSpeed;
                 }
                 if(down)
                 {
-                    player2.y += playerSpeed;
+                    player2.ySpeed += playerSpeed;
                 }
                 if(right)
                 {
-                    player2.x += playerSpeed;
+                    player2.xSpeed += playerSpeed;
                 }
+                //Player 1 traction
+                if(player1.xSpeed > 0)
+                {
+                    player1.xSpeed -= traction;
+                }
+                if(player1.xSpeed < 0)
+                {
+                    player1.xSpeed += traction;
+                }
+                if(player1.ySpeed > 0)
+                {
+                    player1.ySpeed -= traction;
+                }
+                if(player1.ySpeed < 0)
+                {
+                    player1.ySpeed += traction;
+                }
+                //Player 2 traction
+                if(player2.xSpeed > 0)
+                {
+                    player2.xSpeed -= traction;
+                }
+                if(player2.xSpeed < 0)
+                {
+                    player2.xSpeed += traction;
+                }
+                if(player2.ySpeed > 0)
+                {
+                    player2.ySpeed -= traction;
+                }
+                if(player2.ySpeed < 0)
+                {
+                    player2.ySpeed += traction;
+                }
+                //Player 1 max speed
+                if(player1.xSpeed > playerMaxSpeed)
+                {
+                    player1.xSpeed = playerMaxSpeed;
+                }
+                if(player1.xSpeed < -playerMaxSpeed)
+                {
+                    player1.xSpeed = -playerMaxSpeed;
+                }
+                if(player1.ySpeed > playerMaxSpeed)
+                {
+                    player1.ySpeed = playerMaxSpeed;
+                }
+                if(player1.ySpeed < -playerMaxSpeed)
+                {
+                    player1.ySpeed = -playerMaxSpeed;
+                }
+                //Player 2 max speed
+                if(player2.xSpeed > playerMaxSpeed)
+                {
+                    player2.xSpeed = playerMaxSpeed;
+                }
+                if(player2.xSpeed < -playerMaxSpeed)
+                {
+                    player2.xSpeed = -playerMaxSpeed;
+                }
+                if(player2.ySpeed > playerMaxSpeed)
+                {
+                    player2.ySpeed = playerMaxSpeed;
+                }
+                if(player2.ySpeed < -playerMaxSpeed)
+                {
+                    player2.ySpeed = -playerMaxSpeed;
+                }
+                //Update player posistion 
+                player1.x += player1.xSpeed;
+                player1.y += player1.ySpeed;
+                player2.x += player2.xSpeed;
+                player2.y += player2.ySpeed;
+                //Reset frame
                 frame1.getContentPane().revalidate();
                 frame1.getContentPane().repaint();
                 frame2.getContentPane().revalidate();
