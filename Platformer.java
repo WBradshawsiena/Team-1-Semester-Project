@@ -23,13 +23,18 @@ public class Platformer implements Runnable, KeyListener
     private static JPanel panel2;
     //Index:
     //0 = empty, 1 = walls, 2 = playerStart;
-    //objects[y][x]
     private static int[][] layout = {
-    {1,1,1,1,1,1,1,1,1,1},
-    {1,0,0,0,0,0,0,0,0,1},
-    {1,0,0,0,0,0,0,0,0,1},
-    {1,2,0,0,0,0,0,0,0,1},
-    {1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1, 1,1,1,1,1},
+    {1,0,0,0,0, 0,0,0,0,1},
+    {1,0,0,0,0, 0,0,0,0,1},
+    {1,2,0,0,0, 0,0,0,0,1},
+    {1,1,1,1,1, 1,1,0,0,1},
+
+    {1,1,1,1,1, 1,1,0,0,1},
+    {1,0,0,0,0, 0,0,0,0,1},
+    {1,0,0,0,0, 0,0,0,0,1},
+    {1,2,0,0,0, 0,0,0,0,1},
+    {1,1,1,1,1, 1,1,1,1,1},
     };
 
 
@@ -280,6 +285,39 @@ public class Platformer implements Runnable, KeyListener
             }
         }
     }
+    public static boolean checkCollision(GameObject player)
+    {
+        boolean r = false;
+        GameObject wall = null;
+        for(int x = 0;x < objects[1].length && !r;x++)
+        {
+            for(int y = 0;y < objects.length && !r;y++)
+            {
+                wall = objects[y][x];
+                if(wall == null)
+                {
+
+                }
+                else if(player.x + player.xSpeed > wall.x && player.x + player.xSpeed < wall.x + wall.width && player.y + player.ySpeed > wall.y && player.y + player.ySpeed < wall.y + wall.height)
+                {
+                    r = true;
+                }
+                else if(player.x + player.xSpeed + player.width > wall.x && player.x + player.xSpeed < wall.x + wall.width && player.y + player.ySpeed > wall.y && player.y + player.ySpeed < wall.y + wall.height)
+                {
+                    r = true;
+                }
+                else if(player.x + player.xSpeed > wall.x && player.x + player.xSpeed < wall.x + wall.width && player.y + player.ySpeed + player.height > wall.y && player.y + player.ySpeed + player.height < wall.y + wall.height)
+                {
+                    r = true;
+                }
+                else if(player.x + player.xSpeed + player.width > wall.x && player.x + player.xSpeed < wall.x + wall.width && player.y + player.ySpeed + player.height > wall.y && player.y + player.ySpeed + player.height <= wall.y + wall.height)
+                {
+                    r = true;
+                }
+            }
+        }
+        return r;
+    }
     public static void main(String[] args)
     {
         SwingUtilities.invokeLater(new Platformer());
@@ -423,6 +461,45 @@ public class Platformer implements Runnable, KeyListener
                 if(player2.y < -50 + frame2yOffset)
                 {
                     frame2yOffset -= 500;
+                }
+                //Collision
+                while(checkCollision(player1))
+                {
+                    if(player1.xSpeed > 0)
+                    {
+                        player1.xSpeed -= traction;
+                    }
+                    if(player1.xSpeed < 0)
+                    {
+                        player1.xSpeed += traction;
+                    }
+                    if(player1.ySpeed > 0)
+                    {
+                        player1.ySpeed -= traction;
+                    }
+                    if(player1.ySpeed < 0)
+                    {
+                        player1.ySpeed += traction;
+                    }
+                }
+                while(checkCollision(player2))
+                {
+                    if(player2.xSpeed > 0)
+                    {
+                        player2.xSpeed -= traction;
+                    }
+                    if(player2.xSpeed < 0)
+                    {
+                        player2.xSpeed += traction;
+                    }
+                    if(player2.ySpeed > 0)
+                    {
+                        player2.ySpeed -= traction;
+                    }
+                    if(player2.ySpeed < 0)
+                    {
+                        player2.ySpeed += traction;
+                    }
                 }
                 //Update player posistion 
                 player1.x += player1.xSpeed;
