@@ -46,7 +46,7 @@ public class Platformer implements Runnable, KeyListener
 
 
     private static GameObject[][] objects;
-    private static int playerSpeed = 10;
+    private static int playerSpeed = 3;
     private static int playerJump = 20;
     private static int player1JumpCoolDown = 0;
     private static int playerJumpTimer = 60;
