@@ -28,19 +28,29 @@ public class Platformer implements Runnable, KeyListener
     {1,0,0,0,0, 0,0,0,0,1},
     {1,0,0,0,0, 0,0,0,0,1},
     {1,0,0,0,0, 0,0,0,0,1},
-    {1,1,1,1,1, 1,1,0,0,1},
+    {1,0,0,1,1, 1,1,1,1,1},
 
-    {1,1,1,1,1, 1,1,0,0,1},
+    {1,0,0,1,1, 1,1,1,1,1},
     {1,0,0,0,0, 0,0,0,0,1},
     {1,0,0,0,0, 0,0,0,0,1},
-    {1,2,0,0,0, 0,0,0,0,1},
+    {1,0,0,0,0, 0,0,0,0,1},
+    {1,1,0,0,1, 1,0,0,0,1},
+
+    {1,1,0,0,1, 1,1,0,0,1},
+    {1,0,0,0,0, 0,0,0,1,1},
+    {1,0,0,0,0, 0,0,1,1,1},
+    {1,2,0,0,0, 0,1,1,1,1},
     {1,1,1,1,1, 1,1,1,1,1},
     };
 
 
 
     private static GameObject[][] objects;
-    private static int playerSpeed = 2;
+    private static int playerSpeed = 10;
+    private static int playerJump = 20;
+    private static int player1JumpCoolDown = 0;
+    private static int playerJumpTimer = 60;
+    private static int player2JumpCoolDown = 0;
     private static int playerMaxSpeed = 10;
     private static int FPS = 60;
     private static int scale = 500;
@@ -117,9 +127,9 @@ public class Platformer implements Runnable, KeyListener
             public void paintComponent(Graphics g)
             {
                 super.paintComponent(g);
-                g.setColor(player2.color);
-                g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
                 g.setColor(player1.color);
+                g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
+                g.setColor(player2.color);
                 g.fillRect(player2.x - frame2xOffset, player2.y - frame2yOffset, player2.width, player2.height);
                 for(int x = 0;x < objects[1].length;x++)
                 {
@@ -327,35 +337,59 @@ public class Platformer implements Runnable, KeyListener
             public void actionPerformed(ActionEvent e)
             {
                 //Player 1 keys
-                if(w)
+                if(player1JumpCoolDown > 0)
                 {
-                    player1.ySpeed -= playerSpeed;
+                    player1JumpCoolDown--;
+                }
+                if(player1JumpCoolDown == 0)
+                {
+                    player1.color = Color.GREEN;
+                }
+                if(w && player1JumpCoolDown <= 0)
+                {
+                    player1.xSpeed = 0;
+                    player1.ySpeed = -playerJump;
+                    player1JumpCoolDown = playerJumpTimer;
+                    player1.color = Color.BLUE;
                 }
                 if(a)
                 {
                     player1.xSpeed -= playerSpeed;
                 }
-                if(s)
-                {
-                    player1.ySpeed += playerSpeed;
-                }
+                // if(s)
+                // {
+                //     player1.ySpeed += playerSpeed;
+                // }
                 if(d)
                 {
                     player1.xSpeed += playerSpeed;
                 }
                 //Player 2 keys
-                if(up)
+                if(player2JumpCoolDown > 0)
                 {
-                    player2.ySpeed -= playerSpeed;
+                    player2JumpCoolDown--;
+                }
+                if(player2JumpCoolDown == 0)
+                {
+                    player2.color = Color.RED;
+                }
+                if(up && player2JumpCoolDown <= 0)
+                {
+                    left = false;
+                    right = false;
+                    player2.xSpeed = 0;
+                    player2.ySpeed = -playerJump;
+                    player2JumpCoolDown = playerJumpTimer;
+                    player2.color = Color.YELLOW;
                 }
                 if(left)
                 {
                     player2.xSpeed -= playerSpeed;
                 }
-                if(down)
-                {
-                    player2.ySpeed += playerSpeed;
-                }
+                // if(down)
+                // {
+                //     player2.ySpeed += playerSpeed;
+                // }
                 if(right)
                 {
                     player2.xSpeed += playerSpeed;
@@ -369,14 +403,14 @@ public class Platformer implements Runnable, KeyListener
                 {
                     player1.xSpeed += traction;
                 }
-                if(player1.ySpeed > 0)
-                {
-                    player1.ySpeed -= traction;
-                }
-                if(player1.ySpeed < 0)
-                {
-                    player1.ySpeed += traction;
-                }
+                // if(player1.ySpeed > 0)
+                // {
+                //     player1.ySpeed -= traction;
+                // }
+                //if(player1.ySpeed < 0)
+                //{
+                player1.ySpeed += traction;
+                //}
                 //Player 2 traction
                 if(player2.xSpeed > 0)
                 {
@@ -386,14 +420,14 @@ public class Platformer implements Runnable, KeyListener
                 {
                     player2.xSpeed += traction;
                 }
-                if(player2.ySpeed > 0)
-                {
-                    player2.ySpeed -= traction;
-                }
-                if(player2.ySpeed < 0)
-                {
-                    player2.ySpeed += traction;
-                }
+                // if(player2.ySpeed > 0)
+                // {
+                //     player2.ySpeed -= traction;
+                // }
+                // if(player2.ySpeed < 0)
+                // {
+                player2.ySpeed += traction;
+                //}
                 //Player 1 max speed
                 if(player1.xSpeed > playerMaxSpeed)
                 {
@@ -407,10 +441,10 @@ public class Platformer implements Runnable, KeyListener
                 {
                     player1.ySpeed = playerMaxSpeed;
                 }
-                if(player1.ySpeed < -playerMaxSpeed)
-                {
-                    player1.ySpeed = -playerMaxSpeed;
-                }
+                // if(player1.ySpeed < -playerMaxSpeed)
+                // {
+                //     player1.ySpeed = -playerMaxSpeed;
+                // }
                 //Player 2 max speed
                 if(player2.xSpeed > playerMaxSpeed)
                 {
@@ -424,10 +458,10 @@ public class Platformer implements Runnable, KeyListener
                 {
                     player2.ySpeed = playerMaxSpeed;
                 }
-                if(player2.ySpeed < -playerMaxSpeed)
-                {
-                    player2.ySpeed = -playerMaxSpeed;
-                }
+                // if(player2.ySpeed < -playerMaxSpeed)
+                // {
+                //     player2.ySpeed = -playerMaxSpeed;
+                // }
                 //Player 1 frame offset
                 if(player1.x > 450 + frame1xOffset)
                 {
