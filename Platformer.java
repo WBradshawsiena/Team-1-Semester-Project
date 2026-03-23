@@ -1,11 +1,13 @@
 //
 //
 //USE W A S D TO MOVE GREEN SQUARE
+//USE ARROWS TO MOVE RED SQUARE
 //
 //
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+//import java.text.CollationElementIterator;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -19,7 +21,7 @@ public class Platformer implements Runnable, KeyListener
 {
     private static JPanel panel1;
     private static JPanel panel2;
-    private static Color c = Color.GREEN;
+    //private static Color c = Color.GREEN;
     private static int playerSpeed = 2;
     private static JFrame frame1;
     private static JFrame frame2;
@@ -27,12 +29,18 @@ public class Platformer implements Runnable, KeyListener
     private static boolean a = false;
     private static boolean s = false;
     private static boolean d = false;
+    private static boolean up = false;
+    private static boolean left = false;
+    private static boolean down = false;
+    private static boolean right = false;
     public static GameObject player1;
+    public static GameObject player2;
     //private static JButton b;
     @Override
     public void run()
     {
-        player1 = new GameObject("Player 1",0,0,100,100);
+        player1 = new GameObject("Player 1",0,0,100,100, Color.GREEN);
+        player2 = new GameObject("Player 2",0,0,100,100, Color.RED);
         frame1 = new JFrame("Player 1");
         frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame1.setPreferredSize(new Dimension(500,500));
@@ -49,8 +57,10 @@ public class Platformer implements Runnable, KeyListener
             public void paintComponent(Graphics g)
             {
                 super.paintComponent(g);
-                g.setColor(c);
+                g.setColor(player1.color);
                 g.fillRect(player1.x,player1.y,player1.width,player1.height);
+                g.setColor(player2.color);
+                g.fillRect(player2.x,player2.y,player2.width,player2.height);
             }
         };
         panel2 = new JPanel()
@@ -59,10 +69,14 @@ public class Platformer implements Runnable, KeyListener
             public void paintComponent(Graphics g)
             {
                 super.paintComponent(g);
-                g.setColor(c);
+                g.setColor(player1.color);
                 g.fillRect(player1.x,player1.y,player1.width,player1.height);
+                g.setColor(player2.color);
+                g.fillRect(player2.x,player2.y,player2.width,player2.height);
             }
         };
+        frame1.setLocation(0,0);
+        frame2.setLocation(1000,0);
         frame1.add(panel1);
         frame1.pack();
         frame1.setVisible(true);
@@ -81,6 +95,7 @@ public class Platformer implements Runnable, KeyListener
         public int y;
         public int width;
         public int height;
+        public Color color = Color.BLACK;
         public GameObject(String name, int x, int y, int width, int height)
         {
             this.name = name;
@@ -88,6 +103,15 @@ public class Platformer implements Runnable, KeyListener
             this.y = y;
             this.width = width;
             this.height = height;
+        }
+        public GameObject(String name, int x, int y, int width, int height, Color color)
+        {
+            this.name = name;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.color = color;
         }
     }
     @Override
@@ -109,6 +133,22 @@ public class Platformer implements Runnable, KeyListener
         {
             d = true;
         }
+        if (e.getKeyCode() == KeyEvent.VK_UP)
+        {
+            up = true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT)
+        {
+            left = true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN)
+        {
+            down = true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+        {
+            right = true;
+        }
     }
     @Override
     public void keyReleased(KeyEvent e)
@@ -128,6 +168,22 @@ public class Platformer implements Runnable, KeyListener
         if (e.getKeyCode() == KeyEvent.VK_D)
         {
             d = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_UP)
+        {
+            up = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT)
+        {
+            left = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN)
+        {
+            down = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+        {
+            right = false;
         }
     }
     @Override
@@ -158,6 +214,22 @@ public class Platformer implements Runnable, KeyListener
                 if(d)
                 {
                     player1.x += playerSpeed;
+                }
+                if(up)
+                {
+                    player2.y -= playerSpeed;
+                }
+                if(left)
+                {
+                    player2.x -= playerSpeed;
+                }
+                if(down)
+                {
+                    player2.y += playerSpeed;
+                }
+                if(right)
+                {
+                    player2.x += playerSpeed;
                 }
                 frame1.getContentPane().revalidate();
                 frame1.getContentPane().repaint();
