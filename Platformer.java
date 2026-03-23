@@ -21,13 +21,18 @@ public class Platformer implements Runnable, KeyListener
 {
     private static JPanel panel1;
     private static JPanel panel2;
-    //private static Color c = Color.GREEN;
+    private static String[] layout;
+    private static GameObject[] objects;
     private static int playerSpeed = 2;
     private static int playerMaxSpeed = 10;
     private static int FPS = 60;
     private static int scale = 500;
     private static int barSize = 28;
     private static int traction = 1;
+    private static int frame1xOffset = 0;
+    private static int frame1yOffset = 0;
+    private static int frame2xOffset = 0;
+    private static int frame2yOffset = 0;
     private static JFrame frame1;
     private static JFrame frame2;
     private static boolean w = false;
@@ -71,10 +76,10 @@ public class Platformer implements Runnable, KeyListener
             public void paintComponent(Graphics g)
             {
                 super.paintComponent(g);
-                g.setColor(player1.color);
-                g.fillRect(player1.x,player1.y,player1.width,player1.height);
                 g.setColor(player2.color);
                 g.fillRect(player2.x,player2.y,player2.width,player2.height);
+                g.setColor(player1.color);
+                g.fillRect(player1.x,player1.y,player1.width,player1.height);
             }
         };
         panel2 = new JPanel()
@@ -83,9 +88,9 @@ public class Platformer implements Runnable, KeyListener
             public void paintComponent(Graphics g)
             {
                 super.paintComponent(g);
-                g.setColor(player1.color);
-                g.fillRect(player1.x,player1.y,player1.width,player1.height);
                 g.setColor(player2.color);
+                g.fillRect(player1.x,player1.y,player1.width,player1.height);
+                g.setColor(player1.color);
                 g.fillRect(player2.x,player2.y,player2.width,player2.height);
             }
         };
