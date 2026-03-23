@@ -23,6 +23,9 @@ public class Platformer implements Runnable, KeyListener
     private static JPanel panel2;
     //private static Color c = Color.GREEN;
     private static int playerSpeed = 2;
+    private static int fps = 60;
+    private static int scale = 500;
+    private static int barSize = 28;
     private static JFrame frame1;
     private static JFrame frame2;
     private static boolean w = false;
@@ -39,15 +42,24 @@ public class Platformer implements Runnable, KeyListener
     @Override
     public void run()
     {
+        if(System.getProperty("os.name").toLowerCase().contains("mac"))
+        {
+            barSize = 28;
+        }
+        if(System.getProperty("os.name").toLowerCase().contains("win"))
+        {
+            //I need to test this on windows
+            barSize = 28;
+        }
         player1 = new GameObject("Player 1",0,0,100,100, Color.GREEN);
         player2 = new GameObject("Player 2",0,0,100,100, Color.RED);
         frame1 = new JFrame("Player 1");
         frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame1.setPreferredSize(new Dimension(500,500));
+        frame1.setPreferredSize(new Dimension(scale,scale + barSize));
         frame1.setResizable(false);
         frame2 = new JFrame("Player 2");
         frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame2.setPreferredSize(new Dimension(500,500));
+        frame2.setPreferredSize(new Dimension(scale,scale + barSize));
         frame2.setResizable(false);
         //b = new JButton("Test");
         //b.addActionListener(this);
@@ -194,7 +206,7 @@ public class Platformer implements Runnable, KeyListener
     public static void main(String[] args)
     {
         SwingUtilities.invokeLater(new Platformer());
-        Timer clock = new Timer(1000/60, new ActionListener()
+        Timer clock = new Timer(1000/fps, new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
