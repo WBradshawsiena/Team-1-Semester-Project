@@ -375,8 +375,6 @@ public class Platformer implements Runnable, KeyListener
                 }
                 if(up && player2JumpCoolDown <= 0)
                 {
-                    left = false;
-                    right = false;
                     player2.xSpeed = 0;
                     player2.ySpeed = -playerJump;
                     player2JumpCoolDown = playerJumpTimer;
