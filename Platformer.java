@@ -21,8 +21,20 @@ public class Platformer implements Runnable, KeyListener
 {
     private static JPanel panel1;
     private static JPanel panel2;
-    private static String[] layout;
-    private static GameObject[] objects;
+    //Index:
+    //0 = empty, 1 = walls, 2 = playerStart;
+    //objects[y][x]
+    private static int[][] layout = {
+    {1,1,1,1,1,1,1,1,1,1},
+    {1,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,1},
+    {1,2,0,0,0,0,0,0,0,1},
+    {1,1,1,1,1,1,1,1,1,1},
+    };
+
+
+
+    private static GameObject[][] objects;
     private static int playerSpeed = 2;
     private static int playerMaxSpeed = 10;
     private static int FPS = 60;
@@ -60,6 +72,7 @@ public class Platformer implements Runnable, KeyListener
         }
         player1 = new GameObject("Player 1",0,0,100,100, Color.GREEN);
         player2 = new GameObject("Player 2",0,0,100,100, Color.RED);
+        setLayout();
         frame1 = new JFrame("Player 1");
         frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame1.setPreferredSize(new Dimension(scale,scale + barSize));
@@ -80,6 +93,17 @@ public class Platformer implements Runnable, KeyListener
                 g.fillRect(player2.x - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height);
                 g.setColor(player1.color);
                 g.fillRect(player1.x - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height);
+                for(int x = 0;x < objects[1].length;x++)
+                {
+                    for(int y = 0;y < objects.length;y++)
+                    {
+                        if(objects[y][x] != null)
+                        {
+                            g.setColor(objects[y][x].color);
+                            g.fillRect(objects[y][x].x - frame1xOffset, objects[y][x].y - frame1yOffset, objects[y][x].width, objects[y][x].height);
+                        }
+                    }
+                }
             }
         };
         panel2 = new JPanel()
@@ -92,6 +116,17 @@ public class Platformer implements Runnable, KeyListener
                 g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
                 g.setColor(player1.color);
                 g.fillRect(player2.x - frame2xOffset, player2.y - frame2yOffset, player2.width, player2.height);
+                for(int x = 0;x < objects[1].length;x++)
+                {
+                    for(int y = 0;y < objects.length;y++)
+                    {
+                        if(objects[y][x] != null)
+                        {
+                            g.setColor(objects[y][x].color);
+                            g.fillRect(objects[y][x].x - frame2xOffset, objects[y][x].y - frame2yOffset, objects[y][x].width, objects[y][x].height);
+                        }
+                    }
+                }
             }
         };
         frame1.setLocation(0,0);
@@ -114,9 +149,15 @@ public class Platformer implements Runnable, KeyListener
         public int y;
         public int xSpeed = 0;
         public int ySpeed = 0;
-        public int width;
-        public int height;
+        public int width = 100;
+        public int height = 100;
         public Color color = Color.BLACK;
+        public GameObject(String name, int x, int y)
+        {
+            this.name = name;
+            this.x = x;
+            this.y = y;
+        }
         public GameObject(String name, int x, int y, int width, int height)
         {
             this.name = name;
@@ -211,6 +252,33 @@ public class Platformer implements Runnable, KeyListener
     public void keyTyped(KeyEvent e)
     {
         //System.out.print(e.getKeyChar());
+    }
+    public void setLayout()
+    {
+        objects = new GameObject[layout.length][layout[1].length];
+        for(int x = 0;x < layout[1].length;x++)
+        {
+            for(int y = 0;y < layout.length;y++)
+            {
+                if(layout[y][x] == 0)
+                {
+                    //Empty
+                }
+                else if(layout[y][x] == 1)
+                {
+                    //Wall
+                    objects[y][x] = new GameObject("Wall", x * 100, y * 100);
+                }
+                else if(layout[y][x] == 2)
+                {
+                    //Spawn players here
+                    player1.x = x * 100;
+                    player1.y = y * 100;
+                    player2.x = x * 100;
+                    player2.y = y * 100;
+                }
+            }
+        }
     }
     public static void main(String[] args)
     {
@@ -323,36 +391,36 @@ public class Platformer implements Runnable, KeyListener
                     player2.ySpeed = -playerMaxSpeed;
                 }
                 //Player 1 frame offset
-                if(player1.x > 500 + frame1xOffset)
+                if(player1.x > 450 + frame1xOffset)
                 {
                     frame1xOffset += 500;
                 }
-                if(player1.x < 0 + frame1xOffset)
+                if(player1.x < -50 + frame1xOffset)
                 {
                     frame1xOffset -= 500;
                 }
-                if(player1.y > 500 + frame1yOffset)
+                if(player1.y > 450 + frame1yOffset)
                 {
                     frame1yOffset += 500;
                 }
-                if(player1.y < 0 + frame1yOffset)
+                if(player1.y < -50 + frame1yOffset)
                 {
                     frame1yOffset -= 500;
                 }
                 //Player 2 frame offset
-                if(player2.x > 500 + frame2xOffset)
+                if(player2.x > 450 + frame2xOffset)
                 {
                     frame2xOffset += 500;
                 }
-                if(player2.x < 0 + frame2xOffset)
+                if(player2.x < -50 + frame2xOffset)
                 {
                     frame2xOffset -= 500;
                 }
-                if(player2.y > 500 + frame2yOffset)
+                if(player2.y > 450 + frame2yOffset)
                 {
-                    frame1yOffset += 500;
+                    frame2yOffset += 500;
                 }
-                if(player2.y < 0 + frame2yOffset)
+                if(player2.y < -50 + frame2yOffset)
                 {
                     frame2yOffset -= 500;
                 }
