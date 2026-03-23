@@ -23,7 +23,7 @@ public class Platformer implements Runnable, KeyListener
     private static JPanel panel2;
     //private static Color c = Color.GREEN;
     private static int playerSpeed = 2;
-    private static int fps = 60;
+    private static int FPS = 60;
     private static int scale = 500;
     private static int barSize = 28;
     private static JFrame frame1;
@@ -206,7 +206,7 @@ public class Platformer implements Runnable, KeyListener
     public static void main(String[] args)
     {
         SwingUtilities.invokeLater(new Platformer());
-        Timer clock = new Timer(1000/fps, new ActionListener()
+        Timer clock = new Timer(1000/FPS, new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
