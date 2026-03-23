@@ -19,41 +19,39 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 public class Platformer implements Runnable, KeyListener
 {
-    private static JPanel panel1;
-    private static JPanel panel2;
+    private static int playerSpeed = 3;
+    private static int playerJump = 20;
+    private static int playerJumpTimer = 60;
+    private static int playerMaxSpeed = 10;
+    private static int FPS = 60;
+    private static int windowSize = 7;
     //Index:
     //0 = empty, 1 = walls, 2 = playerStart;
     private static int[][] layout = {
-    {1,1,1,1,1, 1,1,1,1,1},
-    {1,0,0,0,0, 0,0,0,0,1},
-    {1,0,0,0,0, 0,0,0,0,1},
-    {1,0,0,0,0, 0,0,0,0,1},
-    {1,0,0,1,1, 1,1,1,1,1},
+    {1,1,1,1,1,1,1, 1,1,1,1,1,1,1},
+    {1,0,0,0,0,0,0, 0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
+    {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
+    {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
+    {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
+    {1,1,1,1,1,0,1, 1,1,1,1,0,0,1},
 
-    {1,0,0,1,1, 1,1,1,1,1},
-    {1,0,0,0,0, 0,0,0,0,1},
-    {1,0,0,0,0, 0,0,0,0,1},
-    {1,0,0,0,0, 0,0,0,0,1},
-    {1,1,0,0,1, 1,0,0,0,1},
-
-    {1,1,0,0,1, 1,1,0,0,1},
-    {1,0,0,0,0, 0,0,0,1,1},
-    {1,0,0,0,0, 0,0,1,1,1},
-    {1,2,0,0,0, 0,1,1,1,1},
-    {1,1,1,1,1, 1,1,1,1,1},
+    {1,1,1,1,1,0,1, 1,1,1,1,0,0,1},
+    {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0, 0,0,0,0,0,1,1},
+    {1,0,0,0,0,0,0, 0,0,0,0,1,1,1},
+    {1,0,0,0,0,0,0, 0,0,0,1,1,1,1},
+    {1,2,0,0,0,0,0, 0,0,1,1,1,1,1},
+    {1,1,1,1,1,1,1, 1,1,1,1,1,1,1},
     };
 
 
-
+    private static JPanel panel1;
+    private static JPanel panel2;
     private static GameObject[][] objects;
-    private static int playerSpeed = 3;
-    private static int playerJump = 20;
     private static int player1JumpCoolDown = 0;
-    private static int playerJumpTimer = 60;
     private static int player2JumpCoolDown = 0;
-    private static int playerMaxSpeed = 10;
-    private static int FPS = 60;
-    private static int scale = 500;
+    private static int scale = 100 * windowSize;
     private static int barSize = 28;
     private static int traction = 1;
     private static int frame1xOffset = 0;
@@ -461,38 +459,38 @@ public class Platformer implements Runnable, KeyListener
                 //     player2.ySpeed = -playerMaxSpeed;
                 // }
                 //Player 1 frame offset
-                if(player1.x > 450 + frame1xOffset)
+                if(player1.x > 100 * windowSize - player1.width/2 + frame1xOffset)
                 {
-                    frame1xOffset += 500;
+                    frame1xOffset += 100 * windowSize;
                 }
-                if(player1.x < -50 + frame1xOffset)
+                if(player1.x < -player1.width/2 + frame1xOffset)
                 {
-                    frame1xOffset -= 500;
+                    frame1xOffset -= 100 * windowSize;
                 }
-                if(player1.y > 450 + frame1yOffset)
+                if(player1.y > 100 * windowSize - player1.height/2 + frame1yOffset)
                 {
-                    frame1yOffset += 500;
+                    frame1yOffset += 100 * windowSize;
                 }
-                if(player1.y < -50 + frame1yOffset)
+                if(player1.y < - player1.height/2 + frame1yOffset)
                 {
-                    frame1yOffset -= 500;
+                    frame1yOffset -= 100 * windowSize;
                 }
                 //Player 2 frame offset
-                if(player2.x > 450 + frame2xOffset)
+                if(player2.x > 100 * windowSize - player2.width/2 + frame2xOffset)
                 {
-                    frame2xOffset += 500;
+                    frame2xOffset += 100 * windowSize;
                 }
-                if(player2.x < -50 + frame2xOffset)
+                if(player2.x < - player2.width/2 + frame2xOffset)
                 {
-                    frame2xOffset -= 500;
+                    frame2xOffset -= 100 * windowSize;
                 }
-                if(player2.y > 450 + frame2yOffset)
+                if(player2.y > 100 * windowSize - player2.height/2 + frame2yOffset)
                 {
-                    frame2yOffset += 500;
+                    frame2yOffset += 100 * windowSize;
                 }
-                if(player2.y < -50 + frame2yOffset)
+                if(player2.y < - player2.height/2 + frame2yOffset)
                 {
-                    frame2yOffset -= 500;
+                    frame2yOffset -= 100 * windowSize;
                 }
                 //Collision
                 while(checkCollision(player1))
