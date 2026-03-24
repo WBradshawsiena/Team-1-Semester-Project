@@ -20,7 +20,7 @@ import java.awt.event.ActionEvent;
 public class Platformer implements Runnable, KeyListener
 {
     //Modifiers
-    private static int playerSpeed = 3;
+    private static int playerSpeed = 2;
     private static int playerJump = 21;
     private static int playerMaxSpeed = 10;
     private static int FPS = 60;
