@@ -19,6 +19,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 public class Platformer implements Runnable, KeyListener
 {
+    private static int store;
     private static int playerSpeed = 3;
     private static int playerJump = 20;
     private static int playerJumpTimer = 60;
@@ -34,14 +35,14 @@ public class Platformer implements Runnable, KeyListener
     {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
     {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
     {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
-    {1,1,1,1,1,0,1, 1,1,1,1,0,0,1},
+    {1,1,1,1,1,0,1, 1,1,1,0,0,0,1},
 
     {1,1,1,1,1,0,1, 1,1,1,1,0,0,1},
-    {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
-    {1,0,0,0,0,0,0, 0,0,0,0,0,1,1},
+    {1,0,0,0,0,0,1, 1,0,0,0,0,1,1},
     {1,0,0,0,0,0,0, 0,0,0,0,1,1,1},
     {1,0,0,0,0,0,0, 0,0,0,1,1,1,1},
-    {1,2,0,0,0,0,0, 0,0,1,1,1,1,1},
+    {1,0,0,0,0,0,0, 0,0,1,1,1,1,1},
+    {1,2,0,0,0,0,0, 0,1,1,1,1,1,1},
     {1,1,1,1,1,1,1, 1,1,1,1,1,1,1},
     };
 
@@ -49,6 +50,7 @@ public class Platformer implements Runnable, KeyListener
     private static JPanel panel1;
     private static JPanel panel2;
     private static GameObject[][] objects;
+    private static GameObject[][] walls;
     private static int player1JumpCoolDown = 0;
     private static int player2JumpCoolDown = 0;
     private static int scale = 100 * windowSize;
@@ -68,6 +70,12 @@ public class Platformer implements Runnable, KeyListener
     private static boolean left = false;
     private static boolean down = false;
     private static boolean right = false;
+    private static boolean player1CollisionX = false;
+    private static boolean player1CollisionY = false;
+    private static boolean player1CollisionXY = false;
+    private static boolean player2CollisionX = false;
+    private static boolean player2CollisionY = false;
+    private static boolean player2CollisionXY = false;
     public static GameObject player1;
     public static GameObject player2;
     //private static JButton b;
@@ -326,6 +334,72 @@ public class Platformer implements Runnable, KeyListener
         }
         return r;
     }
+    public static boolean checkXCollision(GameObject player)
+    {
+        boolean r = false;
+        GameObject wall = null;
+        for(int x = 0;x < objects[1].length && !r;x++)
+        {
+            for(int y = 0;y < objects.length && !r;y++)
+            {
+                wall = objects[y][x];
+                if(wall == null)
+                {
+
+                }
+                else if(player.x + player.xSpeed > wall.x && player.x + player.xSpeed < wall.x + wall.width && player.y > wall.y && player.y < wall.y + wall.height)
+                {
+                    r = true;
+                }
+                else if(player.x + player.xSpeed + player.width > wall.x && player.x + player.xSpeed < wall.x + wall.width && player.y > wall.y && player.y < wall.y + wall.height)
+                {
+                    r = true;
+                }
+                else if(player.x + player.xSpeed > wall.x && player.x + player.xSpeed < wall.x + wall.width && player.y + player.height > wall.y && player.y + player.height < wall.y + wall.height)
+                {
+                    r = true;
+                }
+                else if(player.x + player.xSpeed + player.width > wall.x && player.x + player.xSpeed < wall.x + wall.width && player.y + player.height > wall.y && player.y + player.height <= wall.y + wall.height)
+                {
+                    r = true;
+                }
+            }
+        }
+        return r;
+    }
+    public static boolean checkYCollision(GameObject player)
+    {
+        boolean r = false;
+        GameObject wall = null;
+        for(int x = 0;x < objects[1].length && !r;x++)
+        {
+            for(int y = 0;y < objects.length && !r;y++)
+            {
+                wall = objects[y][x];
+                if(wall == null)
+                {
+
+                }
+                else if(player.x > wall.x && player.x < wall.x + wall.width && player.y + player.ySpeed > wall.y && player.y + player.ySpeed < wall.y + wall.height)
+                {
+                    r = true;
+                }
+                else if(player.x + player.width > wall.x && player.x < wall.x + wall.width && player.y + player.ySpeed > wall.y && player.y + player.ySpeed < wall.y + wall.height)
+                {
+                    r = true;
+                }
+                else if(player.x > wall.x && player.x < wall.x + wall.width && player.y + player.ySpeed + player.height > wall.y && player.y + player.ySpeed + player.height < wall.y + wall.height)
+                {
+                    r = true;
+                }
+                else if(player.x + player.width > wall.x && player.x < wall.x + wall.width && player.y + player.ySpeed + player.height > wall.y && player.y + player.ySpeed + player.height <= wall.y + wall.height)
+                {
+                    r = true;
+                }
+            }
+        }
+        return r;
+    }
     public static void main(String[] args)
     {
         SwingUtilities.invokeLater(new Platformer());
@@ -493,6 +567,55 @@ public class Platformer implements Runnable, KeyListener
                     frame2yOffset -= 100 * windowSize;
                 }
                 //Collision
+                player1CollisionXY = checkCollision(player1);
+                if(player1CollisionXY)
+                {
+                    player1CollisionX = checkXCollision(player1);
+                    player1CollisionY = checkYCollision(player1);
+                }
+                else
+                {
+                    player1CollisionX = false;
+                    player1CollisionY = false;
+                }
+                if(player2CollisionXY)
+                {
+                    player2CollisionX = checkXCollision(player2);
+                    player2CollisionY = checkYCollision(player2);
+                }
+                else
+                {
+                    player2CollisionX = false;
+                    player2CollisionY = false;
+                }
+                if(player1CollisionX && !player1CollisionY)
+                {
+                    while(checkXCollision(player1))
+                    {
+                        if(player1.xSpeed > 0)
+                        {
+                            player1.xSpeed -= traction;
+                        }
+                        if(player1.xSpeed < 0)
+                        {
+                            player1.xSpeed += traction;
+                        }
+                    }
+                }
+                else if(!player1CollisionX && player1CollisionY)
+                {
+                    while(checkYCollision(player1))
+                    {
+                        if(player1.ySpeed > 0)
+                        {
+                            player1.ySpeed -= traction;
+                        }
+                        if(player1.ySpeed < 0)
+                        {
+                            player1.ySpeed += traction;
+                        }
+                    }
+                }
                 while(checkCollision(player1))
                 {
                     if(player1.xSpeed > 0)
@@ -510,6 +633,34 @@ public class Platformer implements Runnable, KeyListener
                     if(player1.ySpeed < 0)
                     {
                         player1.ySpeed += traction;
+                    }
+                }
+                if(player2CollisionX && !player2CollisionY)
+                {
+                    while(checkXCollision(player2))
+                    {
+                        if(player2.xSpeed > 0)
+                        {
+                            player2.xSpeed -= traction;
+                        }
+                        if(player2.xSpeed < 0)
+                        {
+                            player2.xSpeed += traction;
+                        }
+                    }
+                }
+                else if(!player2CollisionX && player2CollisionY)
+                {
+                    while(checkYCollision(player2))
+                    {
+                        if(player2.ySpeed > 0)
+                        {
+                            player2.ySpeed -= traction;
+                        }
+                        if(player2.ySpeed < 0)
+                        {
+                            player2.ySpeed += traction;
+                        }
                     }
                 }
                 while(checkCollision(player2))
