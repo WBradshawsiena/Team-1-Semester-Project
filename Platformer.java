@@ -11,7 +11,7 @@ import java.awt.event.KeyListener;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-//import java.awt.event.MouseAdapter;
+//import java.adwt.event.MouseAdapter;
 //import java.awt.event.MouseEvent;
 //import java.util.Random;
 import java.awt.event.ActionListener;
@@ -19,25 +19,26 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 public class Platformer implements Runnable, KeyListener
 {
-    private static int store;
+    //Modifiers
     private static int playerSpeed = 3;
-    private static int playerJump = 20;
-    private static int playerJumpTimer = 60;
+    private static int playerJump = 21;
     private static int playerMaxSpeed = 10;
     private static int FPS = 60;
     private static int windowSize = 7;
+
+
     //Index:
     //0 = empty, 1 = walls, 2 = playerStart;
     private static int[][] layout = {
     {1,1,1,1,1,1,1, 1,1,1,1,1,1,1},
+    {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0, 0,0,0,0,0,0,1},
     {1,0,0,0,0,0,0, 0,0,0,0,0,0,1},
     {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
     {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
-    {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
-    {1,0,0,0,0,0,1, 1,0,0,0,0,0,1},
-    {1,1,1,1,1,0,1, 1,1,1,0,0,0,1},
+    {1,0,0,1,1,1,1, 1,1,1,0,0,0,1},
 
-    {1,1,1,1,1,0,1, 1,1,1,1,0,0,1},
+    {1,0,0,1,1,1,1, 1,1,1,1,0,0,1},
     {1,0,0,0,0,0,1, 1,0,0,0,0,1,1},
     {1,0,0,0,0,0,0, 0,0,0,0,1,1,1},
     {1,0,0,0,0,0,0, 0,0,0,1,1,1,1},
@@ -45,14 +46,12 @@ public class Platformer implements Runnable, KeyListener
     {1,2,0,0,0,0,0, 0,1,1,1,1,1,1},
     {1,1,1,1,1,1,1, 1,1,1,1,1,1,1},
     };
-
+    
 
     private static JPanel panel1;
     private static JPanel panel2;
     private static GameObject[][] objects;
-    private static GameObject[][] walls;
-    private static int player1JumpCoolDown = 0;
-    private static int player2JumpCoolDown = 0;
+    private static int store;
     private static int scale = 100 * windowSize;
     private static int barSize = 28;
     private static int traction = 1;
@@ -409,20 +408,18 @@ public class Platformer implements Runnable, KeyListener
             public void actionPerformed(ActionEvent e)
             {
                 //Player 1 keys
-                if(player1JumpCoolDown > 0)
+                if(w)
                 {
-                    player1JumpCoolDown--;
-                }
-                if(player1JumpCoolDown == 0)
-                {
-                    player1.color = Color.GREEN;
-                }
-                if(w && player1JumpCoolDown <= 0)
-                {
-                    player1.xSpeed = 0;
-                    player1.ySpeed = -playerJump;
-                    player1JumpCoolDown = playerJumpTimer;
-                    player1.color = Color.BLUE;
+                    store = player1.ySpeed;
+                    player1.ySpeed = 1;
+                    if(checkYCollision(player1))
+                    {
+                        player1.ySpeed = -playerJump;
+                    }
+                    else
+                    {
+                        player1.ySpeed = store;
+                    }
                 }
                 if(a)
                 {
@@ -437,20 +434,18 @@ public class Platformer implements Runnable, KeyListener
                     player1.xSpeed += playerSpeed;
                 }
                 //Player 2 keys
-                if(player2JumpCoolDown > 0)
+                if(up)
                 {
-                    player2JumpCoolDown--;
-                }
-                if(player2JumpCoolDown == 0)
-                {
-                    player2.color = Color.RED;
-                }
-                if(up && player2JumpCoolDown <= 0)
-                {
-                    player2.xSpeed = 0;
-                    player2.ySpeed = -playerJump;
-                    player2JumpCoolDown = playerJumpTimer;
-                    player2.color = Color.YELLOW;
+                    store = player2.ySpeed;
+                    player2.ySpeed = 1;
+                    if(checkYCollision(player2))
+                    {
+                        player2.ySpeed = -playerJump;
+                    }
+                    else
+                    {
+                        player2.ySpeed = store;
+                    }
                 }
                 if(left)
                 {
@@ -568,6 +563,7 @@ public class Platformer implements Runnable, KeyListener
                 }
                 //Collision
                 player1CollisionXY = checkCollision(player1);
+                player2CollisionXY = checkCollision(player2);
                 if(player1CollisionXY)
                 {
                     player1CollisionX = checkXCollision(player1);
