@@ -11,12 +11,22 @@ import java.awt.event.KeyListener;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 //import java.adwt.event.MouseAdapter;
 //import java.awt.event.MouseEvent;
 //import java.util.Random;
 import java.awt.event.ActionListener;
 //import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
+
+/**
+ * Runs a 2D multiplayer platformer engine. This comment
+ * should be edited as we make progress to accurately
+ * describe the functionality of this class.
+ * 
+ * @author Wyatt Bradshaw, Thomas Hammersma, Ayden McCabe, Andrew Pratt
+ * @version 1.1
+ */
 public class Platformer implements Runnable, KeyListener
 {
     //Modifiers
@@ -31,9 +41,11 @@ public class Platformer implements Runnable, KeyListener
     private static int A = 1;
     private static int R = 1-A;
 
-
-    //Index:
-    //0 = empty, 1 = walls, 2 = playerStart;
+    /**
+     * A 2D array that directly represents the layout of the level.
+     * 
+     * 0 = empty, W = walls, P = playerStart, R = ?
+     */
     private static int[][] layout = {
     {W,W,W,W,W,W,W, W,W,W,W,W,W,W, W,W,W,W,W,W,W, W,W,W,W,W,W,W, W,W,W,W,W,W,W},
     {W,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0,0,0,W},
@@ -75,6 +87,7 @@ public class Platformer implements Runnable, KeyListener
     {W,P,0,0,0,0,0, 0,W,0,W,0,W,0, 0,W,0,0,W,0,0, 0,0,0,0,0,A,A, A,A,A,A,A,A,W},
     {W,W,W,W,W,W,W, W,W,W,W,W,W,W, W,W,W,W,W,W,W, W,W,W,W,W,W,W, W,W,W,W,W,W,W},
     };
+
     private static JPanel panel1;
     private static JPanel panel2;
     private static GameObject[][] objects;
@@ -105,6 +118,7 @@ public class Platformer implements Runnable, KeyListener
     public static GameObject player1;
     public static GameObject player2;
     //private static JButton b;
+
     @Override
     public void run()
     {
@@ -117,9 +131,12 @@ public class Platformer implements Runnable, KeyListener
             //I need to test this on windows
             barSize = 28;
         }
-        player1 = new GameObject("Player 1",0,0,100,100, Color.GREEN);
+        //player1 = new GameObject("Player 1",0,0,100,100, Color.GREEN);
+        player1 = new GameObject("Player 1", 0, 0, 100, 100, "ArtAssets/snotGuy.gif");
         player2 = new GameObject("Player 2",0,0,100,100, Color.RED);
+
         setLayout();
+
         frame1 = new JFrame("Player 1");
         frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame1.setPreferredSize(new Dimension(scale,scale + barSize));
@@ -136,10 +153,12 @@ public class Platformer implements Runnable, KeyListener
             public void paintComponent(Graphics g)
             {
                 super.paintComponent(g);
+
                 g.setColor(player2.color);
                 g.fillRect(player2.x - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height);
-                g.setColor(player1.color);
-                g.fillRect(player1.x - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height);
+
+                g.drawImage(player1.spriteImage, player1.x - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, null);
+
                 for(int x = 0;x < objects[1].length;x++)
                 {
                     for(int y = 0;y < objects.length;y++)
@@ -159,8 +178,12 @@ public class Platformer implements Runnable, KeyListener
             public void paintComponent(Graphics g)
             {
                 super.paintComponent(g);
-                g.setColor(player1.color);
-                g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
+
+                //g.setColor(player1.color);
+                //g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
+
+                g.drawImage(player1.spriteImage, player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, null);
+
                 g.setColor(player2.color);
                 g.fillRect(player2.x - frame2xOffset, player2.y - frame2yOffset, player2.width, player2.height);
                 for(int x = 0;x < objects[1].length;x++)
@@ -191,14 +214,36 @@ public class Platformer implements Runnable, KeyListener
     }
     public class GameObject
     {
+        /** The name of the GameObject. */
         public String name;
+
+        /** The x-coordinate of the GameObject. */
         public int x;
+
+        /** The y-coordinate of the GameObject. */
         public int y;
+
+        /** The GameObject's speed in the x-axis. */
         public int xSpeed = 0;
+
+        /** The GameObject's speed in the y-axis. */
         public int ySpeed = 0;
+
+        /** The width of the GameObject. */
         public int width = 100;
+
+        /** The height of the GameObject. */
         public int height = 100;
+
+        /** The color of the GameObject (defaults to black). */
         public Color color = Color.BLACK;
+
+        /** The sprite of the GameObject. */
+        public Image spriteImage;
+
+        /** The file of the GameObject's sprite. */
+        public ImageIcon sprite;
+
         public GameObject(String name, int x, int y)
         {
             this.name = name;
@@ -221,6 +266,27 @@ public class Platformer implements Runnable, KeyListener
             this.width = width;
             this.height = height;
             this.color = color;
+        }
+
+        /**
+         * Constructs a GameObject with a specified name, coordinates, size, and sprite.
+         * 
+         * @param name the name of the GameObject
+         * @param x the GameObject's x-coordinate
+         * @param y the GameObject's y-coordinate
+         * @param width the width of the GameObject
+         * @param height the height of the GameObject
+         * @param spriteFileName the file name of the sprite to represent the GameObject.
+         */
+        public GameObject(String name, int x, int y, int width, int height, String spriteFileName)
+        {
+            this.name = name;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.sprite = new ImageIcon(spriteFileName);
+            this.spriteImage = sprite.getImage();
         }
     }
     @Override
