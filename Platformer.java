@@ -1,9 +1,3 @@
-//
-//
-//USE W A S D TO MOVE Player 1
-//USE ARROWS TO MOVE Player 2
-//
-//
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -90,17 +84,22 @@ public class Platformer implements Runnable, KeyListener
 
     private static JPanel panel1;
     private static JPanel panel2;
+
     private static GameObject[][] objects;
+    
     private static int store;
     private static int scale = 100 * windowSize;
     private static int barSize = 28;
+
     private static int traction = 1;
+
     private static int frame1xOffset = 0;
     private static int frame1yOffset = 0;
     private static int frame2xOffset = 0;
     private static int frame2yOffset = 0;
     private static JFrame frame1;
     private static JFrame frame2;
+
     private static boolean w = false;
     private static boolean a = false;
     private static boolean s = false;
@@ -109,14 +108,22 @@ public class Platformer implements Runnable, KeyListener
     private static boolean left = false;
     private static boolean down = false;
     private static boolean right = false;
+
     private static boolean player1CollisionX = false;
     private static boolean player1CollisionY = false;
     private static boolean player1CollisionXY = false;
     private static boolean player2CollisionX = false;
     private static boolean player2CollisionY = false;
     private static boolean player2CollisionXY = false;
+
     public static GameObject player1;
+    public static ImageIcon[] p1Sprites = {
+        new ImageIcon("ArtAssets/snotGuy.gif"),
+        new ImageIcon("ArtAssets/snotJump.gif")
+    };
+
     public static GameObject player2;
+
     //private static JButton b;
 
     @Override
@@ -128,11 +135,15 @@ public class Platformer implements Runnable, KeyListener
         }
         if(System.getProperty("os.name").toLowerCase().contains("win"))
         {
-            //I need to test this on windows
+            //I need to test this on windows --> tested it, it works :D
             barSize = 28;
         }
-        //player1 = new GameObject("Player 1",0,0,100,100, Color.GREEN);
-        player1 = new GameObject("Player 1", 0, 0, 100, 100, "ArtAssets/snotGuy.gif");
+
+        // This is the old constructor call for player 1, which just makes him a green square.
+            //player1 = new GameObject("Player 1",0,0,100,100, Color.GREEN);
+
+        //Constructor calls for player characters
+        player1 = new GameObject("Player 1", 0, 0, 100, 100, p1Sprites);
         player2 = new GameObject("Player 2",0,0,100,100, Color.RED);
 
         setLayout();
@@ -147,6 +158,7 @@ public class Platformer implements Runnable, KeyListener
         frame2.setResizable(false);
         //b = new JButton("Test");
         //b.addActionListener(this);
+
         panel1 = new JPanel()
         {
             @Override
@@ -199,6 +211,7 @@ public class Platformer implements Runnable, KeyListener
                 }
             }
         };
+
         frame1.setLocation(0,0);
         frame2.setLocation(1000,0);
         frame1.add(panel1);
@@ -212,8 +225,43 @@ public class Platformer implements Runnable, KeyListener
         frame2.addKeyListener(this);
         frame2.setFocusable(true);
     }
+
+    /**
+     * Custom data type that holds an array of sprites. Should be used for constructing GameObjects with multiple sprites.
+     */
+    public class SpriteSet {
+
+        /** An array of sprites. */
+        private ImageIcon[] sprites;
+
+        /**
+         * Constructs a SpriteSet with a specified array of sprites.
+         * 
+         * @param gifs the array of sprites to be assigned to the SpriteSet
+         */
+        public SpriteSet(ImageIcon[] sprites){
+            this.sprites = sprites;
+        }
+
+        /**
+         * Returns the sprite of the GameObject at sprites[index] as an Image.
+         * 
+         * @return the sprite in sprites at the specified index
+         */
+        public Image getSprite(int index) {
+            return sprites[index].getImage();
+        }
+
+    }
+
+    /**
+     * Encapsulated class that represents an object in the game
+     * that can be interacted with in some way. Contains name, 
+     * location, scale, speed, color, and sprite data.
+     */
     public class GameObject
     {
+
         /** The name of the GameObject. */
         public String name;
 
@@ -243,6 +291,9 @@ public class Platformer implements Runnable, KeyListener
 
         /** The file of the GameObject's sprite. */
         public ImageIcon sprite;
+
+        /** The SpriteSet of the GameObject (for objects with multiple sprites). */
+        public SpriteSet spriteSet;
 
         public GameObject(String name, int x, int y)
         {
@@ -288,6 +339,45 @@ public class Platformer implements Runnable, KeyListener
             this.sprite = new ImageIcon(spriteFileName);
             this.spriteImage = sprite.getImage();
         }
+
+        /**
+         * Constructs a GameObject with a specified name, coordinates, size, and sprite set.
+         * 
+         * @param name the name of the GameObject
+         * @param x the GameObject's x-coordinate
+         * @param y the GameObject's y-coordinate
+         * @param width the width of the GameObject
+         * @param height the height of the GameObject
+         * @param sprites the array of ImageIcons that will be assigned to the SpriteSet.
+         */
+        public GameObject(String name, int x, int y, int width, int height, ImageIcon[] sprites)
+        {
+            this.name = name;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.spriteSet = new SpriteSet(sprites);
+            this.spriteImage = this.getSprite(0);
+        }
+
+        /**
+         * Fetches the GameObject's sprite in its SpriteSet at a specified index.
+         * 
+         * @param index the index of the sprite to return
+         * @return the sprite at the specified index
+         */
+        public Image getSprite(int index) {
+            return spriteSet.getSprite(index);
+        }
+
+        /**
+         * Sets the GameObject's sprite.
+         */
+        public void setSprite(int index) {
+            spriteImage = getSprite(index);
+        }
+
     }
     @Override
     public void keyPressed(KeyEvent e)
@@ -506,7 +596,9 @@ public class Platformer implements Runnable, KeyListener
                 // right = d;
                 //Player 1 keys
                 if(w)
-                {
+                {   // Player 1 jump
+                    player1.setSprite(1);
+
                     store = player1.ySpeed;
                     player1.ySpeed = 1;
                     if(checkYCollision(player1))
@@ -520,17 +612,18 @@ public class Platformer implements Runnable, KeyListener
                 }
                 else
                 {
+                    player1.setSprite(0);
                     player1.ySpeed += playerSpeed;
                 }
-                if(a)
+                if(a) // Player 1 move left
                 {
                     player1.xSpeed -= playerSpeed;
                 }
-                if(s)
+                if(s) // Player 1 TBD, maybe crouch? Slam?
                 {
                     //player1.ySpeed += playerSpeed;
                 }
-                if(d)
+                if(d) // Player 1 move right
                 {
                     player1.xSpeed += playerSpeed;
                 }
