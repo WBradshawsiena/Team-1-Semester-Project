@@ -118,8 +118,8 @@ public class Platformer implements Runnable, KeyListener
 
     public static GameObject player1;
     public static ImageIcon[] p1Sprites = {
-        new ImageIcon("ArtAssets/snotGuy.gif"),
-        new ImageIcon("ArtAssets/snotJump.gif")
+        new ImageIcon("Platformer/ArtAssets/snotGuy.gif"),
+        new ImageIcon("Platformer/ArtAssets/snotJump.gif")
     };
 
     public static GameObject player2;
