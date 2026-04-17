@@ -8,7 +8,8 @@ public class BMIAPP extends JFrame {
     private double weight;
     private int height;
     private JTextField textField; 
-    private JLabel label2; 
+    private JLabel label2;
+    private JLabel bmiLabel; 
     public BMIAPP() {
         setTitle("BMIAPP Toggle Example Page");
         setSize(500, 400);
@@ -40,7 +41,7 @@ public class BMIAPP extends JFrame {
          label2= new JLabel("Weight (kg):"+ weight+"\nHeight (cm):"+ height, JLabel.CENTER);
         JButton button1 = new JButton("Goal Tracker");
         button1.addActionListener(e -> JOptionPane.showMessageDialog(this, "Hello from Page 1!"));
-        textField = new JTextField(25);           // <-- Text field
+        textField = new JTextField(10);           // <-- Text field
         textField.setFont(new Font("Arial", Font.PLAIN, 16));
 
         JButton getInputButton = new JButton("Set Weight");
@@ -62,18 +63,47 @@ public class BMIAPP extends JFrame {
         page2 = new JPanel(new BorderLayout());
         page2.setBackground(new Color(255, 240, 240));
 
-        JLabel label = new JLabel("This is Page 2", JLabel.CENTER);
+        JLabel label = new JLabel("BMI Results", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
 
         JButton button2 = new JButton("Click Me on Page 2");
         button2.addActionListener(e -> JOptionPane.showMessageDialog(this, "Hello from Page 2!"));
 
+        bmiLabel = new JLabel("Make sure to set your weight and height on Page 1 first.", JLabel.CENTER);
+        bmiLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        
+        JButton calcButton = new JButton("Calculate BMI");
+        calcButton.addActionListener(e -> calculateBMI());
         
         JPanel centerPanel = new JPanel();
-       
+        
+        centerPanel.setBackground(new Color(255, 240, 240));
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        bmiLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        calcButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(Box.createVerticalStrut(60));
+        centerPanel.add(bmiLabel);
+        centerPanel.add(Box.createVerticalStrut(20));
+        centerPanel.add(calcButton);
+        
         page2.add(label, BorderLayout.NORTH);
-        page2.add(centerPanel, BorderLayout.CENTER);
+        page2.add(centerPanel, BorderLayout.CENTER);}
+
+    private void calculateBMI() {
+        if (weight == 0 || height == 0) {
+            bmiLabel.setText("Please set both weight and height on Page 1.");
+            return;
+        }
+        double heightInMeters = height / 100.0;
+        double bmi = weight / (heightInMeters * heightInMeters);
+        bmiLabel.setText(String.format("BMI: %.2f", bmi));
+        
+    
+        revalidate();
+        repaint();
     }
+
+    
     private void getInputFromField(int index) {
         String input = textField.getText().trim(); 
         if (input.isEmpty()) {
