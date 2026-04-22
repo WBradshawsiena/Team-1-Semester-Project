@@ -9,7 +9,9 @@ public class BMIAPP extends JFrame {
     private int height;
     private JTextField textField; 
     private JLabel label2;
-    private JLabel bmiLabel; 
+    private JLabel bmiLabel;
+    private double goalCalories;
+ 
     public BMIAPP() {
         setTitle("BMIAPP Toggle Example Page");
         setSize(500, 400);
@@ -38,10 +40,12 @@ public class BMIAPP extends JFrame {
 
         JLabel label = new JLabel("Personal Tracker", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
-         label2= new JLabel("Weight (kg):"+ weight+"\nHeight (cm):"+ height, JLabel.CENTER);
-        JButton button1 = new JButton("Goal Tracker");
-        button1.addActionListener(e -> JOptionPane.showMessageDialog(this, "Hello from Page 1!"));
-        textField = new JTextField(10);           // <-- Text field
+        label2 = new JLabel("<html>Weight (kg): " + weight + "<br>Height (cm): " + height + "<br>Goal Calories: " + goalCalories + "</html>", JLabel.CENTER);
+        
+        JButton button1 = new JButton("Goal Calories");
+        button1.addActionListener(e -> getInputFromField(2));
+        
+         textField = new JTextField(10);           // <-- Text field
         textField.setFont(new Font("Arial", Font.PLAIN, 16));
 
         JButton getInputButton = new JButton("Set Weight");
@@ -153,18 +157,6 @@ public class BMIAPP extends JFrame {
         centerPanel.add(walkPanel);
         centerPanel.add(runPanel);
         centerPanel.add(swimPanel);
-
-
-
-
-
-
-
-
-
-
-
-        
         page2.add(label, BorderLayout.NORTH);
         page2.add(centerPanel, BorderLayout.CENTER);}
 
@@ -195,7 +187,10 @@ public class BMIAPP extends JFrame {
         if (index == 1) {
             height = Integer.parseInt(input);
         }
-        label2.setText("<html>Weight (kg): " + weight + "<br>Height (cm): " + height + "</html>");
+        if (index == 2) {
+            goalCalories = Double.parseDouble(input);
+}
+        label2.setText("<html>Weight (kg): " + weight + "<br>Height (cm): " + height + "<br>Goal Calories: " + goalCalories + "</html>");
         revalidate();
         repaint();
     }
