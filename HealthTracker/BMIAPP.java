@@ -66,8 +66,7 @@ public class BMIAPP extends JFrame {
         JLabel label = new JLabel("BMI Results", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
 
-        JButton button2 = new JButton("Click Me on Page 2");
-        button2.addActionListener(e -> JOptionPane.showMessageDialog(this, "Hello from Page 2!"));
+        
 
         bmiLabel = new JLabel("Make sure to set your weight and height on Page 1 first.", JLabel.CENTER);
         bmiLabel.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -75,16 +74,96 @@ public class BMIAPP extends JFrame {
         JButton calcButton = new JButton("Calculate BMI");
         calcButton.addActionListener(e -> calculateBMI());
         
+        
+        JTextField walkField = new JTextField(5);
+        JLabel walkResult = new JLabel("Calories burned: -");
+        JButton walkButton = new JButton("Calculate Walk");
+        walkButton.addActionListener(e -> {
+        String input = walkField.getText().trim();
+        if (input.isEmpty()) {
+            walkResult.setText("Please enter a value.");
+            return;
+        }
+        double km = Double.parseDouble(input);
+        double calories = weight * km * 0.9;
+        walkResult.setText(String.format("Calories burned: %.1f kcal", calories));
+    });
+
+        JTextField runField = new JTextField(5);
+        JLabel runResult = new JLabel("Calories burned: -");
+        JButton runButton = new JButton("Calculate Run");
+        runButton.addActionListener(e -> {
+        String input = runField.getText().trim();
+        if (input.isEmpty()) {
+            runResult.setText("Please enter a value.");
+            return;
+    }
+        double km = Double.parseDouble(input);
+        double calories = weight * km * 1.036;
+        runResult.setText(String.format("Calories burned: %.1f kcal", calories));
+});
+
+        JTextField swimField = new JTextField(5);
+        JLabel swimResult = new JLabel("Calories burned: -");
+        JButton swimButton = new JButton("Calculate Swim");
+        swimButton.addActionListener(e -> {
+        String input = swimField.getText().trim();
+        if (input.isEmpty()) {
+            swimResult.setText("Please enter a value.");
+            return;
+    }
+        double meters = Double.parseDouble(input);
+        double calories = weight * (meters / 1000) * 0.95;
+        swimResult.setText(String.format("Calories burned: %.1f kcal", calories));
+});
+        
         JPanel centerPanel = new JPanel();
         
         centerPanel.setBackground(new Color(255, 240, 240));
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         bmiLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         calcButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        centerPanel.add(Box.createVerticalStrut(60));
+        
+        JPanel walkPanel = new JPanel();
+        walkPanel.setBackground(new Color(255, 240, 240));
+        walkPanel.add(new JLabel("Walk (km):"));
+        walkPanel.add(walkField);
+        walkPanel.add(walkButton);
+        walkPanel.add(walkResult);
+
+        JPanel runPanel = new JPanel();
+        runPanel.setBackground(new Color(255, 240, 240));
+        runPanel.add(new JLabel("Run (km):"));
+        runPanel.add(runField);
+        runPanel.add(runButton);
+        runPanel.add(runResult);
+
+        JPanel swimPanel = new JPanel();
+        swimPanel.setBackground(new Color(255, 240, 240));
+        swimPanel.add(new JLabel("Swim (m):"));
+        swimPanel.add(swimField);
+        swimPanel.add(swimButton);
+        swimPanel.add(swimResult);
+
+        centerPanel.add(Box.createVerticalStrut(10));
         centerPanel.add(bmiLabel);
-        centerPanel.add(Box.createVerticalStrut(20));
+        centerPanel.add(Box.createVerticalStrut(5));
         centerPanel.add(calcButton);
+        centerPanel.add(Box.createVerticalStrut(15));
+        centerPanel.add(walkPanel);
+        centerPanel.add(runPanel);
+        centerPanel.add(swimPanel);
+
+
+
+
+
+
+
+
+
+
+
         
         page2.add(label, BorderLayout.NORTH);
         page2.add(centerPanel, BorderLayout.CENTER);}
@@ -107,10 +186,7 @@ public class BMIAPP extends JFrame {
     private void getInputFromField(int index) {
         String input = textField.getText().trim(); 
         if (input.isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "The text field is empty!", 
-                "Input Error", 
-                JOptionPane.WARNING_MESSAGE); 
+            JOptionPane.showMessageDialog(this, "The text field is empty!", "Input Error", JOptionPane.WARNING_MESSAGE); 
             return;
         }
         if (index == 0) {
