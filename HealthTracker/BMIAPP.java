@@ -1,5 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
+
 public class BMIAPP extends JFrame {
     private JPanel page1;
     private JPanel page2;
@@ -7,11 +8,13 @@ public class BMIAPP extends JFrame {
     private JButton toggleButton;
     private double weight;
     private int height;
-    private JTextField textField; 
+    private JTextField textField;
     private JLabel label2;
     private JLabel bmiLabel;
     private double goalCalories;
- 
+    private JLabel caloriesLeftLabel;
+    private double caloriesBurned;
+
     public BMIAPP() {
         setTitle("BMIAPP Toggle Example Page");
         setSize(500, 400);
@@ -40,12 +43,13 @@ public class BMIAPP extends JFrame {
 
         JLabel label = new JLabel("Personal Tracker", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
-        label2 = new JLabel("<html>Weight (kg): " + weight + "<br>Height (cm): " + height + "<br>Goal Calories: " + goalCalories + "</html>", JLabel.CENTER);
-        
+        label2 = new JLabel("<html>Weight (kg): " + weight + "<br>Height (cm): " + height + "<br>Goal Calories: "
+                + goalCalories + "</html>", JLabel.CENTER);
+
         JButton button1 = new JButton("Goal Calories");
         button1.addActionListener(e -> getInputFromField(2));
-        
-         textField = new JTextField(10);           // <-- Text field
+
+        textField = new JTextField(10); // <-- Text field
         textField.setFont(new Font("Arial", Font.PLAIN, 16));
 
         JButton getInputButton = new JButton("Set Weight");
@@ -70,66 +74,75 @@ public class BMIAPP extends JFrame {
         JLabel label = new JLabel("BMI Results", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
 
+        bmiLabel = new JLabel("Make sure to set your weight and height on Page 1 first.");
+        bmiLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        //bmiLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        caloriesLeftLabel = new JLabel("Calories left: set a goal on Page 1 first.");
+        caloriesLeftLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        caloriesLeftLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+
         
 
-        bmiLabel = new JLabel("Make sure to set your weight and height on Page 1 first.", JLabel.CENTER);
-        bmiLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        
-        JButton calcButton = new JButton("Calculate BMI");
-        calcButton.addActionListener(e -> calculateBMI());
-        
-        
         JTextField walkField = new JTextField(5);
         JLabel walkResult = new JLabel("Calories burned: -");
         JButton walkButton = new JButton("Calculate Walk");
         walkButton.addActionListener(e -> {
-        String input = walkField.getText().trim();
-        if (input.isEmpty()) {
-            walkResult.setText("Please enter a value.");
-            return;
-        }
-        double km = Double.parseDouble(input);
-        double calories = weight * km * 0.9;
-        walkResult.setText(String.format("Calories burned: %.1f kcal", calories));
-    });
+            String input = walkField.getText().trim();
+            if (input.isEmpty()) {
+                walkResult.setText("Please enter a value.");
+                return;
+            }
+            double km = Double.parseDouble(input);
+            double calories = weight * km * 0.9;
+            walkResult.setText(String.format("Calories burned: %.1f kcal", calories));
+            caloriesBurned += calories;
+            updateCaloriesLeft();
+        });
 
         JTextField runField = new JTextField(5);
         JLabel runResult = new JLabel("Calories burned: -");
         JButton runButton = new JButton("Calculate Run");
         runButton.addActionListener(e -> {
-        String input = runField.getText().trim();
-        if (input.isEmpty()) {
-            runResult.setText("Please enter a value.");
-            return;
-    }
-        double km = Double.parseDouble(input);
-        double calories = weight * km * 1.036;
-        runResult.setText(String.format("Calories burned: %.1f kcal", calories));
-});
+            String input = runField.getText().trim();
+            if (input.isEmpty()) {
+                runResult.setText("Please enter a value.");
+                return;
+            }
+            double km = Double.parseDouble(input);
+            double calories = weight * km * 1.036;
+            runResult.setText(String.format("Calories burned: %.1f kcal", calories));
+            caloriesBurned += calories;
+            updateCaloriesLeft();
+        });
 
         JTextField swimField = new JTextField(5);
         JLabel swimResult = new JLabel("Calories burned: -");
         JButton swimButton = new JButton("Calculate Swim");
         swimButton.addActionListener(e -> {
-        String input = swimField.getText().trim();
-        if (input.isEmpty()) {
-            swimResult.setText("Please enter a value.");
-            return;
-    }
-        double meters = Double.parseDouble(input);
-        double calories = weight * (meters / 1000) * 0.95;
-        swimResult.setText(String.format("Calories burned: %.1f kcal", calories));
-});
-        
+            String input = swimField.getText().trim();
+            if (input.isEmpty()) {
+                swimResult.setText("Please enter a value.");
+                return;
+            }
+            double meters = Double.parseDouble(input);
+            double calories = weight * (meters / 1000) * 0.95;
+            swimResult.setText(String.format("Calories burned: %.1f kcal", calories));
+            caloriesBurned += calories;
+            updateCaloriesLeft();
+        });
+
         JPanel centerPanel = new JPanel();
-        
+
         centerPanel.setBackground(new Color(255, 240, 240));
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         bmiLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        calcButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+        //calcButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        caloriesLeftLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         JPanel walkPanel = new JPanel();
         walkPanel.setBackground(new Color(255, 240, 240));
+        walkPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         walkPanel.add(new JLabel("Walk (km):"));
         walkPanel.add(walkField);
         walkPanel.add(walkButton);
@@ -137,6 +150,7 @@ public class BMIAPP extends JFrame {
 
         JPanel runPanel = new JPanel();
         runPanel.setBackground(new Color(255, 240, 240));
+        runPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         runPanel.add(new JLabel("Run (km):"));
         runPanel.add(runField);
         runPanel.add(runButton);
@@ -144,6 +158,7 @@ public class BMIAPP extends JFrame {
 
         JPanel swimPanel = new JPanel();
         swimPanel.setBackground(new Color(255, 240, 240));
+        swimPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         swimPanel.add(new JLabel("Swim (m):"));
         swimPanel.add(swimField);
         swimPanel.add(swimButton);
@@ -151,14 +166,39 @@ public class BMIAPP extends JFrame {
 
         centerPanel.add(Box.createVerticalStrut(10));
         centerPanel.add(bmiLabel);
-        centerPanel.add(Box.createVerticalStrut(5));
-        centerPanel.add(calcButton);
+        centerPanel.add(Box.createVerticalStrut(15));
+        centerPanel.add(caloriesLeftLabel);
+
         centerPanel.add(Box.createVerticalStrut(15));
         centerPanel.add(walkPanel);
+        centerPanel.add(Box.createVerticalStrut(5));
         centerPanel.add(runPanel);
+        centerPanel.add(Box.createVerticalStrut(5));
         centerPanel.add(swimPanel);
+
         page2.add(label, BorderLayout.NORTH);
-        page2.add(centerPanel, BorderLayout.CENTER);}
+        page2.add(centerPanel, BorderLayout.CENTER);
+    }
+
+    private void updateCaloriesLeft() {
+        if (goalCalories == 0) {
+            caloriesLeftLabel.setText("Calories left: set a goal on Page 1 first.");
+            return;
+        }
+        double totalBurned = caloriesBurned;
+        
+        double left = goalCalories - totalBurned;
+        if (left <= 0) {
+            caloriesLeftLabel.setText("Congratulations Goal Completed!");
+        } else {
+            caloriesLeftLabel.setText(String.format("Calories left: %.1f kcal", left));
+}
+        
+        
+        
+        revalidate();
+        repaint();
+    }
 
     private void calculateBMI() {
         if (weight == 0 || height == 0) {
@@ -168,17 +208,15 @@ public class BMIAPP extends JFrame {
         double heightInMeters = height / 100.0;
         double bmi = weight / (heightInMeters * heightInMeters);
         bmiLabel.setText(String.format("BMI: %.2f", bmi));
-        
-    
+
         revalidate();
         repaint();
     }
 
-    
     private void getInputFromField(int index) {
-        String input = textField.getText().trim(); 
+        String input = textField.getText().trim();
         if (input.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "The text field is empty!", "Input Error", JOptionPane.WARNING_MESSAGE); 
+            JOptionPane.showMessageDialog(this, "The text field is empty!", "Input Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if (index == 0) {
@@ -189,17 +227,21 @@ public class BMIAPP extends JFrame {
         }
         if (index == 2) {
             goalCalories = Double.parseDouble(input);
-}
-        label2.setText("<html>Weight (kg): " + weight + "<br>Height (cm): " + height + "<br>Goal Calories: " + goalCalories + "</html>");
+        }
+        label2.setText("<html>Weight (kg): " + weight + "<br>Height (cm): " + height + "<br>Goal Calories: "
+                + goalCalories + "</html>");
         revalidate();
         repaint();
     }
+
     private void togglePage() {
         remove(currentPage);
 
         if (currentPage == page1) {
             currentPage = page2;
             toggleButton.setText("Switch to Page 1");
+            calculateBMI();
+            updateCaloriesLeft();
         } else {
             currentPage = page1;
             toggleButton.setText("Switch to Page 2");
@@ -212,6 +254,8 @@ public class BMIAPP extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {new BMIAPP().setVisible(true);});
+        SwingUtilities.invokeLater(() -> {
+            new BMIAPP().setVisible(true);
+        });
     }
 }
