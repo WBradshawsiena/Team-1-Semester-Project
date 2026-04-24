@@ -15,6 +15,7 @@ public class BMIAPP extends JFrame {
     private JLabel caloriesLeftLabel;
     private double caloriesBurned;
 
+    /** Initializes the main window, layout, and toggle button. */
     public BMIAPP() {
         setTitle("BMIAPP Toggle Example Page");
         setSize(500, 400);
@@ -36,7 +37,7 @@ public class BMIAPP extends JFrame {
         currentPage = page1;
         add(currentPage, BorderLayout.CENTER);
     }
-
+    /** Builds Page 1 with weight, height, and goal calorie inputs. */
     private void createPage1() {
         page1 = new JPanel(new BorderLayout());
         page1.setBackground(new Color(240, 240, 255));
@@ -66,7 +67,7 @@ public class BMIAPP extends JFrame {
         page1.add(label2, BorderLayout.SOUTH);
         page1.add(centerPanel, BorderLayout.CENTER);
     }
-
+    /** Builds Page 2 with BMI display and exercise calorie calculators. */ 
     private void createPage2() {
         page2 = new JPanel(new BorderLayout());
         page2.setBackground(new Color(255, 240, 240));
@@ -179,7 +180,7 @@ public class BMIAPP extends JFrame {
         page2.add(label, BorderLayout.NORTH);
         page2.add(centerPanel, BorderLayout.CENTER);
     }
-
+    /** Subtracts total calories burned from goal and updates the label. */
     private void updateCaloriesLeft() {
         if (goalCalories == 0) {
             caloriesLeftLabel.setText("Calories left: set a goal on Page 1 first.");
@@ -199,7 +200,7 @@ public class BMIAPP extends JFrame {
         revalidate();
         repaint();
     }
-
+    /** Calculates BMI from stored weight and height and updates the label. */
     private void calculateBMI() {
         if (weight == 0 || height == 0) {
             bmiLabel.setText("Please set both weight and height on Page 1.");
@@ -213,6 +214,7 @@ public class BMIAPP extends JFrame {
         repaint();
     }
 
+    /** Reads the text field input and sets weight, height, or goal calories based on index. */
     private void getInputFromField(int index) {
         String input = textField.getText().trim();
         if (input.isEmpty()) {
@@ -233,7 +235,7 @@ public class BMIAPP extends JFrame {
         revalidate();
         repaint();
     }
-
+    /** Switches between Page 1 and Page 2, updating BMI and calories on switch. */
     private void togglePage() {
         remove(currentPage);
 
