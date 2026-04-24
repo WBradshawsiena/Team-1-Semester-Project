@@ -121,8 +121,9 @@ public class Platformer implements Runnable, KeyListener {
 
     public static GameObject player1;
     public static ImageIcon[] p1Sprites = {
-        new ImageIcon("Platformer/ArtAssets/snotGuy.gif"),
-        new ImageIcon("Platformer/ArtAssets/snotJump.gif")
+        new ImageIcon("Platformer/ArtAssets/iceGuyIdle.gif"),
+        new ImageIcon("Platformer/ArtAssets/snotJump.gif"),
+        new ImageIcon("Platformer/ArtAssets/iceGuyRun.gif"),
     };
 
     public static GameObject player2;
@@ -589,6 +590,7 @@ public class Platformer implements Runnable, KeyListener {
                 if (a) // Player 1 move left
                 {
                     player1.xSpeed -= playerSpeed;
+                    player1.setSprite(2);
                 }
                 if (s) // Player 1 TBD, maybe crouch? Slam?
                 {
@@ -597,6 +599,7 @@ public class Platformer implements Runnable, KeyListener {
                 if (d) // Player 1 move right
                 {
                     player1.xSpeed += playerSpeed;
+                    player1.setSprite(2);
                 }
                 //Player 2 keys
                 if (up) {
