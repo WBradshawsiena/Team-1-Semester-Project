@@ -19,16 +19,49 @@ import javax.swing.*;
  */
 public class Platformer implements Runnable, KeyListener {
 
-    //Modifiers
+    /**
+     * Acceleration for player characters, in pixels/frame.
+     */
     private static int playerSpeed = 2;
+
+    /**
+     * The maximum height the player can jump.
+     */
     private static int playerJump = 21;
+
+    /**
+     * The fastest speed the player can run.
+     */
     private static int playerMaxSpeed = 10;
+
+    /**
+     * The framerate the game runs at.
+     */
     private static int FPS = 60;
+
+    /**
+     * The size of the window, measured in GameObjects.
+     */
     private static int windowSize = 7;
+
+    /**
+     * A variable representing a wall in int[][] layout.
+     */
     private static int W = 1;
+
+    /**
+     * A variable representing where the players spawn in int[][] layout.
+     */
     private static int P = 2;
-    //Set A to 0 for a harder version of the level
+
+    /**
+     * A variable representing an "added" wall in int[][] layout.
+     */
     private static int A = 1;
+
+    /**
+     * A variable representing a "removed" wall in int[][] layout.
+     */
     private static int R = 1 - A;
 
     /**
