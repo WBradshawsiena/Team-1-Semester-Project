@@ -23,7 +23,7 @@ public class Platformer implements Runnable, KeyListener {
     private static int playerSpeed = 2;
     private static int playerJump = 21;
     private static int playerMaxSpeed = 10;
-    private static int FPS = 60;
+    private static int FPS = 120;
     private static int windowSize = 7;
     private static int W = 1;
     private static int P = 2;
@@ -193,9 +193,9 @@ public class Platformer implements Runnable, KeyListener {
                 //g.setColor(player1.color);
                 //g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
                 if (player1.facingRight) {
-                    g.drawImage(player1.getImage(), (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, null);
+                    g.drawImage(player1.getImage(), (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, null);
                 } else {
-                    g.drawImage(player1.getImage(), (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, null);
+                    g.drawImage(player1.getImage(), (player1.x) - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, null);
                 }
 
                 g.setColor(player2.color);
