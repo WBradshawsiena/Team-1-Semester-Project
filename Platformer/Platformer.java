@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -36,8 +37,7 @@ public class Platformer implements Runnable, KeyListener {
     public enum PlayerState {
         GROUNDED,
         AIRBORNE,
-        RUNNINGLEFT,
-        RUNNINGRIGHT,
+        RUNNING,
         JUMPING
     }
     private static int player1JumpTimer = 0;
@@ -83,7 +83,7 @@ public class Platformer implements Runnable, KeyListener {
         {W, W, W, A, A, W, W, 0, 0, 0, 0, 0, 0, 0, 0, 0, W, 0, 0, W, 0, W, W, A, 0, 0, 0, W, W, W, A, A, W, W, W},
         {W, 0, 0, 0, 0, 0, 0, 0, 0, 0, W, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, W, W, W, A, A, A, A, A, W},
         {W, P, 0, 0, 0, 0, 0, 0, W, 0, W, 0, W, 0, 0, W, 0, 0, W, 0, 0, 0, 0, 0, 0, 0, A, A, A, A, A, A, A, A, W},
-        {W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W},};
+        {W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W}};
 
     private static JPanel panel1;
     private static JPanel panel2;
@@ -122,8 +122,10 @@ public class Platformer implements Runnable, KeyListener {
     public static GameObject player1;
     public static ImageIcon[] p1Sprites = {
         new ImageIcon("Platformer/ArtAssets/iceGuyIdle.gif"),
-        new ImageIcon("Platformer/ArtAssets/snotJump.gif"),
+        new ImageIcon("Platformer/ArtAssets/iceGuyJump.gif"),
         new ImageIcon("Platformer/ArtAssets/iceGuyRun.gif"),
+        new ImageIcon("Platformer/ArtAssets/iceGuyRunLeft.gif"),
+        new ImageIcon("Platformer/ArtAssets/iceGuyAir.gif")
     };
 
     public static GameObject player2;
@@ -136,11 +138,12 @@ public class Platformer implements Runnable, KeyListener {
         }
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             //I need to test this on windows --> tested it, it works :D
-            barSize = 28;
+            barSize = 27;
         }
 
         // This is the old constructor call for player 1, which just makes him a green square.
         //player1 = new GameObject("Player 1",0,0,100,100, Color.GREEN);
+        
         //Constructor calls for player characters
         player1 = new GameObject("Player 1", 0, 0, 100, 100, p1Sprites);
         player2 = new GameObject("Player 2", 0, 0, 100, 100, Color.RED);
@@ -166,7 +169,11 @@ public class Platformer implements Runnable, KeyListener {
                 g.setColor(player2.color);
                 g.fillRect(player2.x - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height);
 
-                g.drawImage(player1.spriteImage, player1.x - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, null);
+                if (player1.facingRight) {
+                    g.drawImage(player1.getImage(), (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, null);
+                } else {
+                    g.drawImage(player1.getImage(), (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, null);
+                }
 
                 for (int x = 0; x < objects[1].length; x++) {
                     for (int y = 0; y < objects.length; y++) {
@@ -185,7 +192,11 @@ public class Platformer implements Runnable, KeyListener {
 
                 //g.setColor(player1.color);
                 //g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
-                g.drawImage(player1.spriteImage, player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, null);
+                if (player1.facingRight) {
+                    g.drawImage(player1.getImage(), (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, null);
+                } else {
+                    g.drawImage(player1.getImage(), (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, null);
+                }
 
                 g.setColor(player2.color);
                 g.fillRect(player2.x - frame2xOffset, player2.y - frame2yOffset, player2.width, player2.height);
@@ -215,19 +226,27 @@ public class Platformer implements Runnable, KeyListener {
     }
 
     public static int updatePlayerState(GameObject player, int jumpTimer) {
-        boolean isGrounded = checkYCollision(player);
+
+        boolean isGrounded = player1.ySpeed == 0;
+        PlayerState currentState = player.state;
+        PlayerState newState;
 
         if (jumpTimer > 0) {
-            player.state = PlayerState.JUMPING;
+            newState = PlayerState.JUMPING;
             jumpTimer--;
         } else if (!isGrounded) {
-            player.state = PlayerState.AIRBORNE;
-        } else if (player.xSpeed < 0) {
-            player.state = PlayerState.RUNNINGLEFT;
-        } else if (player.xSpeed > 0) {
-            player.state = PlayerState.RUNNINGRIGHT;
+            newState = PlayerState.AIRBORNE;
         } else {
-            player.state = PlayerState.GROUNDED;
+            if (Math.abs(player.xSpeed) > 0) {
+                newState = PlayerState.RUNNING;
+            } else {
+                newState = PlayerState.GROUNDED;
+            }
+        }
+
+        if (currentState != newState) {
+            player.state = newState;
+            // System.out.println("Player state changed from " + currentState + "to" + newState);
         }
 
         return jumpTimer;
@@ -271,7 +290,7 @@ public class Platformer implements Runnable, KeyListener {
      */
     public class GameObject {
 
-        public PlayerState state = PlayerState.GROUNDED;
+        public PlayerState state  = PlayerState.GROUNDED;
 
         /**
          * The name of the GameObject.
@@ -327,6 +346,16 @@ public class Platformer implements Runnable, KeyListener {
          * The SpriteSet of the GameObject (for objects with multiple sprites).
          */
         public SpriteSet spriteSet;
+
+        /**
+         * The file path to the current sprite.
+         */
+        public String spritePath;
+
+        /**
+         * Used to flip the sprite if false.
+         */
+        public boolean facingRight = true;
 
         public GameObject(String name, int x, int y) {
             this.name = name;
@@ -409,10 +438,28 @@ public class Platformer implements Runnable, KeyListener {
         /**
          * Sets the GameObject's sprite.
          */
-        public void setSprite(int index) {
-            spriteImage = getSprite(index);
+        public void setSprite(String path) {
+            if (!path.equals(spritePath)) {
+                spritePath = path;
+                Image img = Toolkit.getDefaultToolkit().createImage(path);
+                sprite = new ImageIcon(img);
+                // System.out.println("Created new ImageIcon pointing to " + path);
+            }
         }
 
+        /**
+         * Gets the GameObject's sprite image. 
+         */
+        public Image getImage() {
+            return sprite.getImage();
+        }
+
+        /**
+         * Sets the facing direction for the sprite.
+         */
+        public void setDirection(boolean right) {
+            facingRight = right;
+        }
     }
 
     @Override
@@ -573,24 +620,24 @@ public class Platformer implements Runnable, KeyListener {
                 // right = d;
                 //Player 1 keys
                 if (w) {   // Player 1 jump
-                    player1.setSprite(1);
+                    // player1.setSprite(1);
 
                     store = player1.ySpeed;
                     player1.ySpeed = 1;
                     if (checkYCollision(player1)) {
                         player1.ySpeed = -playerJump;
-                        player1JumpTimer = FPS;
+                        player1JumpTimer = 18;
                     } else {
                         player1.ySpeed = store;
                     }
                 } else {
-                    player1.setSprite(0);
+                    // player1.setSprite(0);
                     player1.ySpeed += playerSpeed;
                 }
                 if (a) // Player 1 move left
                 {
                     player1.xSpeed -= playerSpeed;
-                    player1.setSprite(2);
+                    player1.setDirection(true);
                 }
                 if (s) // Player 1 TBD, maybe crouch? Slam?
                 {
@@ -599,7 +646,7 @@ public class Platformer implements Runnable, KeyListener {
                 if (d) // Player 1 move right
                 {
                     player1.xSpeed += playerSpeed;
-                    player1.setSprite(2);
+                    player1.setDirection(false);
                 }
                 //Player 2 keys
                 if (up) {
@@ -792,6 +839,19 @@ public class Platformer implements Runnable, KeyListener {
                 }
                 player1JumpTimer = updatePlayerState(player1, player1JumpTimer);
                 player2JumpTimer = updatePlayerState(player2, player2JumpTimer);
+
+
+                    // Set animations
+                if (player1.state == PlayerState.AIRBORNE) {
+                    player1.setSprite("Platformer/ArtAssets/iceGuyAir.gif");
+                } else if (player1.state == PlayerState.RUNNING) {
+                    player1.setSprite("Platformer/ArtAssets/iceGuyRun.gif");
+                } else if (player1.state == PlayerState.JUMPING) {
+                    player1.setSprite("Platformer/ArtAssets/iceGuyJump.gif");
+                } else {
+                    player1.setSprite("Platformer/ArtAssets/iceGuyIdle.gif");
+                }
+            
                 //Update player posistion 
                 player1.x += player1.xSpeed;
                 player1.y += player1.ySpeed;
