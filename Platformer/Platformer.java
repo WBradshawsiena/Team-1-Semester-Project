@@ -1,4 +1,5 @@
-
+import java.util.Map;
+import java.util.HashMap;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -73,6 +74,7 @@ public class Platformer implements Runnable, KeyListener {
         RUNNING,
         JUMPING
     }
+
     private static int player1JumpTimer = 0;
 
     private static int player2JumpTimer = 0;
@@ -153,15 +155,20 @@ public class Platformer implements Runnable, KeyListener {
     private static boolean player2CollisionXY = false;
 
     public static GameObject player1;
-    public static ImageIcon[] p1Sprites = {
-        new ImageIcon("Platformer/ArtAssets/iceGuyIdle.gif"),
-        new ImageIcon("Platformer/ArtAssets/iceGuyJump.gif"),
-        new ImageIcon("Platformer/ArtAssets/iceGuyRun.gif"),
-        new ImageIcon("Platformer/ArtAssets/iceGuyRunLeft.gif"),
-        new ImageIcon("Platformer/ArtAssets/iceGuyAir.gif")
-    };
+    public static Map<String, String> p1Sprites = Map.of(
+        "idle", "Platformer/ArtAssets/iceGuyIdle.gif",
+        "jump", "Platformer/ArtAssets/iceGuyJump.gif",
+        "run", "Platformer/ArtAssets/iceGuyRun.gif",
+        "air", "Platformer/ArtAssets/iceGuyAir.gif"
+    );
 
     public static GameObject player2;
+    public static Map<String, String> p2Sprites = Map.of(
+        "idle", "Platformer/ArtAssets/fireGuyIdle.gif",
+        "jump", "Platformer/ArtAssets/fireGuyJump.gif",
+        "run", "Platformer/ArtAssets/fireGuyRun.gif",
+        "air", "Platformer/ArtAssets/fireGuyAir.gif"
+    );
 
     //private static JButton b;
     @Override
@@ -283,36 +290,6 @@ public class Platformer implements Runnable, KeyListener {
         }
 
         return jumpTimer;
-    }
-
-    /**
-     * Custom data type that holds an array of sprites. Should be used for
-     * constructing GameObjects with multiple sprites.
-     */
-    public class SpriteSet {
-
-        /**
-         * An array of sprites.
-         */
-        private ImageIcon[] sprites;
-
-        /**
-         * Constructs a SpriteSet with a specified array of sprites.
-         *
-         * @param gifs the array of sprites to be assigned to the SpriteSet
-         */
-        public SpriteSet(ImageIcon[] sprites) {
-            this.sprites = sprites;
-        }
-
-        /**
-         * Returns the sprite of the GameObject at sprites[index] as an Image.
-         *
-         * @return the sprite in sprites at the specified index
-         */
-        public Image getSprite(int index) {
-            return sprites[index].getImage();
-        }
 
     }
 
@@ -376,9 +353,9 @@ public class Platformer implements Runnable, KeyListener {
         public ImageIcon sprite;
 
         /**
-         * The SpriteSet of the GameObject (for objects with multiple sprites).
+         * The Map containing filepaths to the sprites of the GameObject (for objects with multiple sprites).
          */
-        public SpriteSet spriteSet;
+        public Map<String, String> spriteSet;
 
         /**
          * The file path to the current sprite.
@@ -447,25 +424,24 @@ public class Platformer implements Runnable, KeyListener {
          * @param sprites the array of ImageIcons that will be assigned to the
          * SpriteSet.
          */
-        public GameObject(String name, int x, int y, int width, int height, ImageIcon[] sprites) {
+        public GameObject(String name, int x, int y, int width, int height, Map<String, String> sprites) {
             this.name = name;
             this.x = x;
             this.y = y;
             this.width = width;
             this.height = height;
-            this.spriteSet = new SpriteSet(sprites);
-            this.spriteImage = this.getSprite(0);
+            this.spriteSet = sprites;
+            this.spriteImage = new ImageIcon(spriteSet.get("idle")).getImage();
         }
 
         /**
-         * Fetches the GameObject's sprite in its SpriteSet at a specified
-         * index.
+         * Fetches the GameObject's sprite in its SpriteSet with the specified key.
          *
          * @param index the index of the sprite to return
          * @return the sprite at the specified index
          */
-        public Image getSprite(int index) {
-            return spriteSet.getSprite(index);
+        public Image getSprite(String key) {
+            return new ImageIcon(spriteSet.get(key)).getImage();
         }
 
         /**
@@ -474,7 +450,7 @@ public class Platformer implements Runnable, KeyListener {
         public void setSprite(String path) {
             if (!path.equals(spritePath)) {
                 spritePath = path;
-                Image img = Toolkit.getDefaultToolkit().createImage(path);
+                Image img = Toolkit.getDefaultToolkit().createImage(spriteSet.get(path));
                 sprite = new ImageIcon(img);
                 // System.out.println("Created new ImageIcon pointing to " + path);
             }
@@ -876,14 +852,26 @@ public class Platformer implements Runnable, KeyListener {
 
                     // Set animations
                 if (player1.state == PlayerState.AIRBORNE) {
-                    player1.setSprite("Platformer/ArtAssets/iceGuyAir.gif");
+                    player1.setSprite("air");
                 } else if (player1.state == PlayerState.RUNNING) {
-                    player1.setSprite("Platformer/ArtAssets/iceGuyRun.gif");
+                    player1.setSprite("run");
                 } else if (player1.state == PlayerState.JUMPING) {
-                    player1.setSprite("Platformer/ArtAssets/iceGuyJump.gif");
+                    player1.setSprite("jump");
                 } else {
-                    player1.setSprite("Platformer/ArtAssets/iceGuyIdle.gif");
+                    player1.setSprite("idle");
                 }
+
+                /*
+                if (player2.state == PlayerState.AIRBORNE) {
+                    player2.setSprite("air");
+                } else if (player2.state == PlayerState.RUNNING) {
+                    player2.setSprite("run");
+                } else if (player2.state == PlayerState.JUMPING) {
+                    player2.setSprite("jump");
+                } else {
+                    player2.setSprite("idle");
+                }
+                */
             
                 //Update player posistion 
                 player1.x += player1.xSpeed;
