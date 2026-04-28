@@ -21,6 +21,11 @@ import javax.swing.*;
 public class Platformer implements Runnable, KeyListener {
 
     /**
+     * Time until player 1 can fire another icicle, in frames
+     */
+    private static int icicleCooldown = 3 * 60;
+
+    /**
      * Acceleration for player characters, in pixels/frame.
      */
     private static int playerSpeed = 2;
@@ -135,6 +140,7 @@ public class Platformer implements Runnable, KeyListener {
     private static int frame1yOffset = 0;
     private static int frame2xOffset = 0;
     private static int frame2yOffset = 0;
+    private static int icicleTimer = 0;
     private static JFrame frame1;
     private static JFrame frame2;
 
@@ -155,6 +161,7 @@ public class Platformer implements Runnable, KeyListener {
     private static boolean player2CollisionXY = false;
 
     public static GameObject player1;
+    public static GameObject icicle;
     public static Map<String, String> p1Sprites = Map.of(
         "idle", "Platformer/ArtAssets/iceGuyIdle.gif",
         "jump", "Platformer/ArtAssets/iceGuyJump.gif",
@@ -177,7 +184,6 @@ public class Platformer implements Runnable, KeyListener {
             barSize = 28;
         }
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            //I need to test this on windows --> tested it, it works :D
             barSize = 27;
         }
 
@@ -186,6 +192,7 @@ public class Platformer implements Runnable, KeyListener {
         
         //Constructor calls for player characters
         player1 = new GameObject("Player 1", 0, 0, 100, 100, p1Sprites);
+        icicle = new GameObject("Icicle", -100, -100, 100,20,Color.CYAN);
         player2 = new GameObject("Player 2", 0, 0, 100, 100, Color.RED);
 
         setLayout();
@@ -208,6 +215,9 @@ public class Platformer implements Runnable, KeyListener {
 
                 g.setColor(player2.color);
                 g.fillRect(player2.x - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height);
+
+                g.setColor(icicle.color);
+                g.fillRect(icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height);
 
                 if (player1.facingRight) {
                     g.drawImage(player1.getImage(), (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, null);
@@ -648,10 +658,21 @@ public class Platformer implements Runnable, KeyListener {
                     player1.xSpeed -= playerSpeed;
                     player1.setDirection(true);
                 }
-                if (s) // Player 1 TBD, maybe crouch? Slam?
+                if (s && icicleTimer <= 0) // Player 1 TBD, maybe crouch? Slam?
                 {
-                    //player1.ySpeed += playerSpeed;
+                    icicleTimer = icicleCooldown;
+                    icicle.x = player1.x;
+                    icicle.y = player1.y + (player1.height/2 - icicle.height/2);
+                    if(player1.facingRight)
+                    {
+                        icicle.xSpeed = -10;
+                    }
+                    else
+                    {
+                        icicle.xSpeed = 10;
+                    }
                 }
+                icicleTimer--;
                 if (d) // Player 1 move right
                 {
                     player1.xSpeed += playerSpeed;
@@ -773,6 +794,11 @@ public class Platformer implements Runnable, KeyListener {
                     player1CollisionX = false;
                     player1CollisionY = false;
                 }
+                if (checkCollision(icicle))
+                {
+                    icicle.x += icicle.xSpeed;
+                    icicle.xSpeed = 0;
+                }
                 if (player2CollisionXY) {
                     player2CollisionX = checkXCollision(player2);
                     player2CollisionY = checkYCollision(player2);
@@ -876,6 +902,8 @@ public class Platformer implements Runnable, KeyListener {
                 //Update player posistion 
                 player1.x += player1.xSpeed;
                 player1.y += player1.ySpeed;
+                icicle.x += icicle.xSpeed;
+                icicle.y += icicle.ySpeed;
                 player2.x += player2.xSpeed;
                 player2.y += player2.ySpeed;
                 //Reset frame
