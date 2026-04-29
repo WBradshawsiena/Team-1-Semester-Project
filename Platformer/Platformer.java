@@ -221,9 +221,9 @@ public class Platformer implements Runnable, KeyListener {
                 g.fillRect(icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height);
 
                 if (player1.facingRight) {
-                    g.drawImage(player1.getImage(), (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, null);
+                    g.drawImage(player1.spriteImage, (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, this);
                 } else {
-                    g.drawImage(player1.getImage(), (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, null);
+                    g.drawImage(player1.spriteImage, (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, this);
                 }
 
                 for (int x = 0; x < objects[1].length; x++) {
@@ -244,9 +244,9 @@ public class Platformer implements Runnable, KeyListener {
                 //g.setColor(player1.color);
                 //g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
                 if (player1.facingRight) {
-                    g.drawImage(player1.getImage(), (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, null);
+                    g.drawImage(player1.spriteImage, (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, this);
                 } else {
-                    g.drawImage(player1.getImage(), (player1.x) - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, null);
+                    g.drawImage(player1.spriteImage, (player1.x) - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, this);
                 }
 
                 g.setColor(player2.color);
@@ -464,6 +464,7 @@ public class Platformer implements Runnable, KeyListener {
                 spritePath = path;
                 Image img = Toolkit.getDefaultToolkit().createImage(spriteSet.get(path));
                 sprite = new ImageIcon(img);
+                spriteImage = sprite.getImage();
                 // System.out.println("Created new ImageIcon pointing to " + path);
             }
         }
@@ -641,9 +642,7 @@ public class Platformer implements Runnable, KeyListener {
                 // right = d;
                 //Player 1 keys
                 if (w) {   // Player 1 jump
-                    // player1.setSprite(1);
-
-                    store = player1.ySpeed;
+                   store = player1.ySpeed;
                     player1.ySpeed = 1;
                     if (checkYCollision(player1)) {
                         player1.ySpeed = -playerJump;
@@ -652,7 +651,6 @@ public class Platformer implements Runnable, KeyListener {
                         player1.ySpeed = store;
                     }
                 } else {
-                    // player1.setSprite(0);
                     player1.ySpeed += playerSpeed;
                 }
                 if (a) // Player 1 move left
@@ -660,8 +658,7 @@ public class Platformer implements Runnable, KeyListener {
                     player1.xSpeed -= playerSpeed;
                     player1.setDirection(true);
                 }
-                if (s) // Player 1 TBD, maybe crouch? Slam?
-                if (s && icicleTimer <= 0) // Player 1 TBD, maybe crouch? Slam?
+                if (s && icicleTimer <= 0) // Player 1 ability: shoot icicle
                 {
                     //player1.ySpeed += playerSpeed;
                     icicleTimer = icicleCooldown;
@@ -911,10 +908,8 @@ public class Platformer implements Runnable, KeyListener {
                 player2.x += player2.xSpeed;
                 player2.y += player2.ySpeed;
                 //Reset frame
-                frame1.getContentPane().revalidate();
-                frame1.getContentPane().repaint();
-                frame2.getContentPane().revalidate();
-                frame2.getContentPane().repaint();
+                frame1.repaint();
+                frame2.repaint();
             }
         });
         clock.start();
