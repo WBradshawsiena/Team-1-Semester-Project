@@ -163,10 +163,10 @@ public class Platformer implements Runnable, KeyListener {
     public static GameObject player1;
     public static GameObject icicle;
     public static Map<String, String> p1Sprites = Map.of(
-        "idle", "ArtAssets/iceGuyIdle.gif",
-        "jump", "ArtAssets/iceGuyJump.gif",
-        "run",  "ArtAssets/iceGuyRun.gif",
-        "air",  "ArtAssets/iceGuyAir.gif"
+        "idle", "Platformer/ArtAssets/iceGuyIdle.gif",
+        "jump", "Platformer/ArtAssets/iceGuyJump.gif",
+        "run", "Platformer/ArtAssets/iceGuyRun.gif",
+        "air", "Platformer/ArtAssets/iceGuyAir.gif"
     );
 
     public static GameObject player2;
@@ -184,12 +184,13 @@ public class Platformer implements Runnable, KeyListener {
             barSize = 28;
         }
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            //I need to test this on windows --> tested it, it works :D
             barSize = 27;
         }
 
         // This is the old constructor call for player 1, which just makes him a green square.
         //player1 = new GameObject("Player 1",0,0,100,100, Color.GREEN);
-        
+
         //Constructor calls for player characters
         player1 = new GameObject("Player 1", 0, 0, 100, 100, p1Sprites);
         icicle = new GameObject("Icicle", -100, -100, 100,20,Color.CYAN);
@@ -220,9 +221,9 @@ public class Platformer implements Runnable, KeyListener {
                 g.fillRect(icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height);
 
                 if (player1.facingRight) {
-                    g.drawImage(player1.getImage(), (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, this);
+                    g.drawImage(player1.getImage(), (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, null);
                 } else {
-                    g.drawImage(player1.getImage(), (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, this);
+                    g.drawImage(player1.getImage(), (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, null);
                 }
 
                 for (int x = 0; x < objects[1].length; x++) {
@@ -243,9 +244,9 @@ public class Platformer implements Runnable, KeyListener {
                 //g.setColor(player1.color);
                 //g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
                 if (player1.facingRight) {
-                    g.drawImage(player1.getImage(), (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, this);
+                    g.drawImage(player1.getImage(), (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, null);
                 } else {
-                    g.drawImage(player1.getImage(), (player1.x) - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, this);
+                    g.drawImage(player1.getImage(), (player1.x) - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, null);
                 }
 
                 g.setColor(player2.color);
@@ -441,8 +442,7 @@ public class Platformer implements Runnable, KeyListener {
             this.width = width;
             this.height = height;
             this.spriteSet = sprites;
-            this.sprite = new ImageIcon(spriteSet.get("idle"));
-            this.spriteImage = this.sprite.getImage();
+            this.spriteImage = new ImageIcon(spriteSet.get("idle")).getImage();
         }
 
         /**
@@ -659,8 +659,10 @@ public class Platformer implements Runnable, KeyListener {
                     player1.xSpeed -= playerSpeed;
                     player1.setDirection(true);
                 }
+                if (s) // Player 1 TBD, maybe crouch? Slam?
                 if (s && icicleTimer <= 0) // Player 1 TBD, maybe crouch? Slam?
                 {
+                    //player1.ySpeed += playerSpeed;
                     icicleTimer = icicleCooldown;
                     icicle.x = player1.x;
                     icicle.y = player1.y + (player1.height/2 - icicle.height/2);
@@ -899,7 +901,7 @@ public class Platformer implements Runnable, KeyListener {
                     player2.setSprite("idle");
                 }
                 */
-            
+
                 //Update player posistion 
                 player1.x += player1.xSpeed;
                 player1.y += player1.ySpeed;
@@ -908,8 +910,10 @@ public class Platformer implements Runnable, KeyListener {
                 player2.x += player2.xSpeed;
                 player2.y += player2.ySpeed;
                 //Reset frame
-                panel1.repaint();
-                panel2.repaint();
+                frame1.getContentPane().revalidate();
+                frame1.getContentPane().repaint();
+                frame2.getContentPane().revalidate();
+                frame2.getContentPane().repaint();
             }
         });
         clock.start();
