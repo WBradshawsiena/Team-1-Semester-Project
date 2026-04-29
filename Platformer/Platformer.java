@@ -254,9 +254,9 @@ public class Platformer implements Runnable, KeyListener {
                 }
 
                 if (!player2.facingRight) {
-                    g.drawImage(player2.spriteImage, (player2.x + 100) - frame1xOffset, player2.y - frame1yOffset, -player2.width, player2.height, this);
+                    g.drawImage(player2.spriteImage, (player2.x + 100) - frame2xOffset, player2.y - frame2yOffset, -player2.width, player2.height, this);
                 } else {
-                    g.drawImage(player2.spriteImage, (player2.x) - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height, this);
+                    g.drawImage(player2.spriteImage, (player2.x) - frame2xOffset, player2.y - frame2yOffset, player2.width, player2.height, this);
                 }
 
                 for (int x = 0; x < objects[1].length; x++) {
@@ -674,11 +674,11 @@ public class Platformer implements Runnable, KeyListener {
                     icicle.y = player1.y + (player1.height/2 - icicle.height/2);
                     if(player1.facingRight)
                     {
-                        icicle.xSpeed = -10;
+                        icicle.xSpeed = 10;
                     }
                     else
                     {
-                        icicle.xSpeed = 10;
+                        icicle.xSpeed = -10;
                     }
                 }
                 icicleTimer--;
@@ -898,7 +898,7 @@ public class Platformer implements Runnable, KeyListener {
                     player1.setSprite("idle");
                 }
 
-                player2.setSprite("still");
+                player2.setSprite("idle");
 
                 /*
                 if (player2.state == PlayerState.AIRBORNE) {
