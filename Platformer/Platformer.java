@@ -163,10 +163,10 @@ public class Platformer implements Runnable, KeyListener {
     public static GameObject player1;
     public static GameObject icicle;
     public static Map<String, String> p1Sprites = Map.of(
-        "idle", "Platformer/ArtAssets/iceGuyIdle.gif",
-        "jump", "Platformer/ArtAssets/iceGuyJump.gif",
-        "run", "Platformer/ArtAssets/iceGuyRun.gif",
-        "air", "Platformer/ArtAssets/iceGuyAir.gif"
+        "idle", "ArtAssets/iceGuyIdle.gif",
+        "jump", "ArtAssets/iceGuyJump.gif",
+        "run",  "ArtAssets/iceGuyRun.gif",
+        "air",  "ArtAssets/iceGuyAir.gif"
     );
 
     public static GameObject player2;
@@ -220,9 +220,9 @@ public class Platformer implements Runnable, KeyListener {
                 g.fillRect(icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height);
 
                 if (player1.facingRight) {
-                    g.drawImage(player1.getImage(), (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, null);
+                    g.drawImage(player1.getImage(), (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, this);
                 } else {
-                    g.drawImage(player1.getImage(), (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, null);
+                    g.drawImage(player1.getImage(), (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, this);
                 }
 
                 for (int x = 0; x < objects[1].length; x++) {
@@ -243,9 +243,9 @@ public class Platformer implements Runnable, KeyListener {
                 //g.setColor(player1.color);
                 //g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
                 if (player1.facingRight) {
-                    g.drawImage(player1.getImage(), (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, null);
+                    g.drawImage(player1.getImage(), (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, this);
                 } else {
-                    g.drawImage(player1.getImage(), (player1.x) - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, null);
+                    g.drawImage(player1.getImage(), (player1.x) - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, this);
                 }
 
                 g.setColor(player2.color);
@@ -441,7 +441,8 @@ public class Platformer implements Runnable, KeyListener {
             this.width = width;
             this.height = height;
             this.spriteSet = sprites;
-            this.spriteImage = new ImageIcon(spriteSet.get("idle")).getImage();
+            this.sprite = new ImageIcon(spriteSet.get("idle"));
+            this.spriteImage = this.sprite.getImage();
         }
 
         /**
@@ -907,10 +908,8 @@ public class Platformer implements Runnable, KeyListener {
                 player2.x += player2.xSpeed;
                 player2.y += player2.ySpeed;
                 //Reset frame
-                frame1.getContentPane().revalidate();
-                frame1.getContentPane().repaint();
-                frame2.getContentPane().revalidate();
-                frame2.getContentPane().repaint();
+                panel1.repaint();
+                panel2.repaint();
             }
         });
         clock.start();
