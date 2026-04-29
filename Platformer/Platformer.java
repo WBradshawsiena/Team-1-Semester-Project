@@ -442,7 +442,7 @@ public class Platformer implements Runnable, KeyListener {
             this.width = width;
             this.height = height;
             this.spriteSet = sprites;
-            this.spriteImage = new ImageIcon(spriteSet.get("idle")).getImage();
+            this.spriteImage = getSprite("idle");
         }
 
         /**
@@ -452,7 +452,8 @@ public class Platformer implements Runnable, KeyListener {
          * @return the sprite at the specified index
          */
         public Image getSprite(String key) {
-            return new ImageIcon(spriteSet.get(key)).getImage();
+            spriteImage = new ImageIcon(spriteSet.get(key)).getImage();
+            return spriteImage;
         }
 
         /**
