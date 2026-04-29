@@ -1,4 +1,5 @@
-
+import java.util.Map;
+import java.util.HashMap;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -18,6 +19,11 @@ import javax.swing.*;
  * @version 1.1
  */
 public class Platformer implements Runnable, KeyListener {
+
+    /**
+     * Time until player 1 can fire another icicle, in frames
+     */
+    private static int icicleCooldown = 3 * 60;
 
     /**
      * Acceleration for player characters, in pixels/frame.
@@ -73,6 +79,7 @@ public class Platformer implements Runnable, KeyListener {
         RUNNING,
         JUMPING
     }
+
     private static int player1JumpTimer = 0;
 
     private static int player2JumpTimer = 0;
@@ -133,6 +140,7 @@ public class Platformer implements Runnable, KeyListener {
     private static int frame1yOffset = 0;
     private static int frame2xOffset = 0;
     private static int frame2yOffset = 0;
+    private static int icicleTimer = 0;
     private static JFrame frame1;
     private static JFrame frame2;
 
@@ -153,15 +161,21 @@ public class Platformer implements Runnable, KeyListener {
     private static boolean player2CollisionXY = false;
 
     public static GameObject player1;
-    public static ImageIcon[] p1Sprites = {
-        new ImageIcon("Platformer/ArtAssets/iceGuyIdle.gif"),
-        new ImageIcon("Platformer/ArtAssets/iceGuyJump.gif"),
-        new ImageIcon("Platformer/ArtAssets/iceGuyRun.gif"),
-        new ImageIcon("Platformer/ArtAssets/iceGuyRunLeft.gif"),
-        new ImageIcon("Platformer/ArtAssets/iceGuyAir.gif")
-    };
+    public static GameObject icicle;
+    public static Map<String, String> p1Sprites = Map.of(
+        "idle", "ArtAssets/iceGuyIdle.gif",
+        "jump", "ArtAssets/iceGuyJump.gif",
+        "run",  "ArtAssets/iceGuyRun.gif",
+        "air",  "ArtAssets/iceGuyAir.gif"
+    );
 
     public static GameObject player2;
+    public static Map<String, String> p2Sprites = Map.of(
+        "idle", "Platformer/ArtAssets/fireGuyIdle.gif",
+        "jump", "Platformer/ArtAssets/fireGuyJump.gif",
+        "run", "Platformer/ArtAssets/fireGuyRun.gif",
+        "air", "Platformer/ArtAssets/fireGuyAir.gif"
+    );
 
     //private static JButton b;
     @Override
@@ -170,7 +184,6 @@ public class Platformer implements Runnable, KeyListener {
             barSize = 28;
         }
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            //I need to test this on windows --> tested it, it works :D
             barSize = 27;
         }
 
@@ -179,6 +192,7 @@ public class Platformer implements Runnable, KeyListener {
         
         //Constructor calls for player characters
         player1 = new GameObject("Player 1", 0, 0, 100, 100, p1Sprites);
+        icicle = new GameObject("Icicle", -100, -100, 100,20,Color.CYAN);
         player2 = new GameObject("Player 2", 0, 0, 100, 100, Color.RED);
 
         setLayout();
@@ -202,10 +216,13 @@ public class Platformer implements Runnable, KeyListener {
                 g.setColor(player2.color);
                 g.fillRect(player2.x - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height);
 
+                g.setColor(icicle.color);
+                g.fillRect(icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height);
+
                 if (player1.facingRight) {
-                    g.drawImage(player1.getImage(), (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, null);
+                    g.drawImage(player1.getImage(), (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, this);
                 } else {
-                    g.drawImage(player1.getImage(), (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, null);
+                    g.drawImage(player1.getImage(), (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, this);
                 }
 
                 for (int x = 0; x < objects[1].length; x++) {
@@ -226,9 +243,9 @@ public class Platformer implements Runnable, KeyListener {
                 //g.setColor(player1.color);
                 //g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
                 if (player1.facingRight) {
-                    g.drawImage(player1.getImage(), (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, null);
+                    g.drawImage(player1.getImage(), (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, this);
                 } else {
-                    g.drawImage(player1.getImage(), (player1.x) - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, null);
+                    g.drawImage(player1.getImage(), (player1.x) - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, this);
                 }
 
                 g.setColor(player2.color);
@@ -283,36 +300,6 @@ public class Platformer implements Runnable, KeyListener {
         }
 
         return jumpTimer;
-    }
-
-    /**
-     * Custom data type that holds an array of sprites. Should be used for
-     * constructing GameObjects with multiple sprites.
-     */
-    public class SpriteSet {
-
-        /**
-         * An array of sprites.
-         */
-        private ImageIcon[] sprites;
-
-        /**
-         * Constructs a SpriteSet with a specified array of sprites.
-         *
-         * @param gifs the array of sprites to be assigned to the SpriteSet
-         */
-        public SpriteSet(ImageIcon[] sprites) {
-            this.sprites = sprites;
-        }
-
-        /**
-         * Returns the sprite of the GameObject at sprites[index] as an Image.
-         *
-         * @return the sprite in sprites at the specified index
-         */
-        public Image getSprite(int index) {
-            return sprites[index].getImage();
-        }
 
     }
 
@@ -376,9 +363,9 @@ public class Platformer implements Runnable, KeyListener {
         public ImageIcon sprite;
 
         /**
-         * The SpriteSet of the GameObject (for objects with multiple sprites).
+         * The Map containing filepaths to the sprites of the GameObject (for objects with multiple sprites).
          */
-        public SpriteSet spriteSet;
+        public Map<String, String> spriteSet;
 
         /**
          * The file path to the current sprite.
@@ -447,25 +434,25 @@ public class Platformer implements Runnable, KeyListener {
          * @param sprites the array of ImageIcons that will be assigned to the
          * SpriteSet.
          */
-        public GameObject(String name, int x, int y, int width, int height, ImageIcon[] sprites) {
+        public GameObject(String name, int x, int y, int width, int height, Map<String, String> sprites) {
             this.name = name;
             this.x = x;
             this.y = y;
             this.width = width;
             this.height = height;
-            this.spriteSet = new SpriteSet(sprites);
-            this.spriteImage = this.getSprite(0);
+            this.spriteSet = sprites;
+            this.sprite = new ImageIcon(spriteSet.get("idle"));
+            this.spriteImage = this.sprite.getImage();
         }
 
         /**
-         * Fetches the GameObject's sprite in its SpriteSet at a specified
-         * index.
+         * Fetches the GameObject's sprite in its SpriteSet with the specified key.
          *
          * @param index the index of the sprite to return
          * @return the sprite at the specified index
          */
-        public Image getSprite(int index) {
-            return spriteSet.getSprite(index);
+        public Image getSprite(String key) {
+            return new ImageIcon(spriteSet.get(key)).getImage();
         }
 
         /**
@@ -474,7 +461,7 @@ public class Platformer implements Runnable, KeyListener {
         public void setSprite(String path) {
             if (!path.equals(spritePath)) {
                 spritePath = path;
-                Image img = Toolkit.getDefaultToolkit().createImage(path);
+                Image img = Toolkit.getDefaultToolkit().createImage(spriteSet.get(path));
                 sprite = new ImageIcon(img);
                 // System.out.println("Created new ImageIcon pointing to " + path);
             }
@@ -672,10 +659,21 @@ public class Platformer implements Runnable, KeyListener {
                     player1.xSpeed -= playerSpeed;
                     player1.setDirection(true);
                 }
-                if (s) // Player 1 TBD, maybe crouch? Slam?
+                if (s && icicleTimer <= 0) // Player 1 TBD, maybe crouch? Slam?
                 {
-                    //player1.ySpeed += playerSpeed;
+                    icicleTimer = icicleCooldown;
+                    icicle.x = player1.x;
+                    icicle.y = player1.y + (player1.height/2 - icicle.height/2);
+                    if(player1.facingRight)
+                    {
+                        icicle.xSpeed = -10;
+                    }
+                    else
+                    {
+                        icicle.xSpeed = 10;
+                    }
                 }
+                icicleTimer--;
                 if (d) // Player 1 move right
                 {
                     player1.xSpeed += playerSpeed;
@@ -797,6 +795,11 @@ public class Platformer implements Runnable, KeyListener {
                     player1CollisionX = false;
                     player1CollisionY = false;
                 }
+                if (checkCollision(icicle))
+                {
+                    icicle.x += icicle.xSpeed;
+                    icicle.xSpeed = 0;
+                }
                 if (player2CollisionXY) {
                     player2CollisionX = checkXCollision(player2);
                     player2CollisionY = checkYCollision(player2);
@@ -876,25 +879,37 @@ public class Platformer implements Runnable, KeyListener {
 
                     // Set animations
                 if (player1.state == PlayerState.AIRBORNE) {
-                    player1.setSprite("Platformer/ArtAssets/iceGuyAir.gif");
+                    player1.setSprite("air");
                 } else if (player1.state == PlayerState.RUNNING) {
-                    player1.setSprite("Platformer/ArtAssets/iceGuyRun.gif");
+                    player1.setSprite("run");
                 } else if (player1.state == PlayerState.JUMPING) {
-                    player1.setSprite("Platformer/ArtAssets/iceGuyJump.gif");
+                    player1.setSprite("jump");
                 } else {
-                    player1.setSprite("Platformer/ArtAssets/iceGuyIdle.gif");
+                    player1.setSprite("idle");
                 }
+
+                /*
+                if (player2.state == PlayerState.AIRBORNE) {
+                    player2.setSprite("air");
+                } else if (player2.state == PlayerState.RUNNING) {
+                    player2.setSprite("run");
+                } else if (player2.state == PlayerState.JUMPING) {
+                    player2.setSprite("jump");
+                } else {
+                    player2.setSprite("idle");
+                }
+                */
             
                 //Update player posistion 
                 player1.x += player1.xSpeed;
                 player1.y += player1.ySpeed;
+                icicle.x += icicle.xSpeed;
+                icicle.y += icicle.ySpeed;
                 player2.x += player2.xSpeed;
                 player2.y += player2.ySpeed;
                 //Reset frame
-                frame1.getContentPane().revalidate();
-                frame1.getContentPane().repaint();
-                frame2.getContentPane().revalidate();
-                frame2.getContentPane().repaint();
+                panel1.repaint();
+                panel2.repaint();
             }
         });
         clock.start();
