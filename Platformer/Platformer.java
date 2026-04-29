@@ -171,6 +171,7 @@ public class Platformer implements Runnable, KeyListener {
 
     public static GameObject player2;
     public static Map<String, String> p2Sprites = Map.of(
+        "still", "Platformer/ArtAssets/fireGuy.png",
         "idle", "Platformer/ArtAssets/fireGuyIdle.gif",
         "jump", "Platformer/ArtAssets/fireGuyJump.gif",
         "run", "Platformer/ArtAssets/fireGuyRun.gif",
@@ -194,7 +195,7 @@ public class Platformer implements Runnable, KeyListener {
         //Constructor calls for player characters
         player1 = new GameObject("Player 1", 0, 0, 100, 100, p1Sprites);
         icicle = new GameObject("Icicle", -100, -100, 100,20,Color.CYAN);
-        player2 = new GameObject("Player 2", 0, 0, 100, 100, Color.RED);
+        player2 = new GameObject("Player 2", 0, 0, 100, 100, p2Sprites);
 
         setLayout();
 
@@ -214,13 +215,16 @@ public class Platformer implements Runnable, KeyListener {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-                g.setColor(player2.color);
-                g.fillRect(player2.x - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height);
+                if (!player2.facingRight) {
+                    g.drawImage(player2.spriteImage, (player2.x + 100) - frame1xOffset, player2.y - frame1yOffset, -player2.width, player2.height, this);
+                } else {
+                    g.drawImage(player2.spriteImage, (player2.x) - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height, this);
+                }
 
                 g.setColor(icicle.color);
                 g.fillRect(icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height);
 
-                if (player1.facingRight) {
+                if (!player1.facingRight) {
                     g.drawImage(player1.spriteImage, (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, this);
                 } else {
                     g.drawImage(player1.spriteImage, (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, this);
@@ -243,14 +247,18 @@ public class Platformer implements Runnable, KeyListener {
 
                 //g.setColor(player1.color);
                 //g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
-                if (player1.facingRight) {
+                if (!player1.facingRight) {
                     g.drawImage(player1.spriteImage, (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, this);
                 } else {
                     g.drawImage(player1.spriteImage, (player1.x) - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, this);
                 }
 
-                g.setColor(player2.color);
-                g.fillRect(player2.x - frame2xOffset, player2.y - frame2yOffset, player2.width, player2.height);
+                if (!player2.facingRight) {
+                    g.drawImage(player2.spriteImage, (player2.x + 100) - frame1xOffset, player2.y - frame1yOffset, -player2.width, player2.height, this);
+                } else {
+                    g.drawImage(player2.spriteImage, (player2.x) - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height, this);
+                }
+
                 for (int x = 0; x < objects[1].length; x++) {
                     for (int y = 0; y < objects.length; y++) {
                         if (objects[y][x] != null) {
@@ -656,7 +664,7 @@ public class Platformer implements Runnable, KeyListener {
                 if (a) // Player 1 move left
                 {
                     player1.xSpeed -= playerSpeed;
-                    player1.setDirection(true);
+                    player1.setDirection(false);
                 }
                 if (s && icicleTimer <= 0) // Player 1 ability: shoot icicle
                 {
@@ -677,7 +685,7 @@ public class Platformer implements Runnable, KeyListener {
                 if (d) // Player 1 move right
                 {
                     player1.xSpeed += playerSpeed;
-                    player1.setDirection(false);
+                    player1.setDirection(true);
                 }
                 //Player 2 keys
                 if (up) {
@@ -694,12 +702,14 @@ public class Platformer implements Runnable, KeyListener {
                 }
                 if (left) {
                     player2.xSpeed -= playerSpeed;
+                    player2.setDirection(false);
                 }
                 if (down) {
                     //player2.ySpeed += playerSpeed;
                 }
                 if (right) {
                     player2.xSpeed += playerSpeed;
+                    player2.setDirection(true);
                 }
                 //Player 1 traction
                 if (player1.xSpeed > 0) {
@@ -887,6 +897,8 @@ public class Platformer implements Runnable, KeyListener {
                 } else {
                     player1.setSprite("idle");
                 }
+
+                player2.setSprite("still");
 
                 /*
                 if (player2.state == PlayerState.AIRBORNE) {
