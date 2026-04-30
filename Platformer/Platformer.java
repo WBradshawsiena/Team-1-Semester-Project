@@ -91,7 +91,7 @@ public class Platformer implements Runnable, KeyListener {
     private static int R = 1 - A;
 
     /**
-     * A variable representing a "removed" wall in int[][] layout.
+     * A variable representing the end goal in int[][] layout.
      */
     private static int F = 3;
 
@@ -335,11 +335,31 @@ public class Platformer implements Runnable, KeyListener {
         frame2.setFocusable(true);
     }
 
+    public static void updatePlayerState(GameObject player, PlayerState state) {
+        player.state = state;
+    }
+
+    /**
+     * Called every frame to determine what state the player is in.
+     * Used to assign animations at the correct times.
+     * 
+     * @param player the player being assessed
+     * @param jumpTimer the player's jumpTimer
+     * @return the updated jumpTimer
+     */
     public static int updatePlayerState(GameObject player, int jumpTimer) {
 
         boolean isGrounded = (player == player1 ? player1CollisionY : player2CollisionY);
         PlayerState currentState = player.state;
         PlayerState newState;
+
+        if ((player == player1 && player1Stunned > 0) || (player == player2 && player2Stunned > 0)) {
+            newState = PlayerState.STUNNED;
+            if (currentState != newState) {
+                player.state = newState;
+            }
+            return jumpTimer;
+        }
 
         if (jumpTimer > 0) {
             newState = PlayerState.JUMPING;
@@ -723,14 +743,14 @@ public class Platformer implements Runnable, KeyListener {
                 // down = s;
                 // right = d;
                 //Player 1 keys
-                if(player1Stunned > 0)
+                if (player1Stunned > 0)
                 {
                     w = false;
                     a = false;
                     s = false;
                     d = false;
                 }
-                if(player2Stunned > 0)
+                if (player2Stunned > 0)
                 {
                     up = false;
                     left = false;
