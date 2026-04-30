@@ -1,5 +1,4 @@
 import java.util.Map;
-import java.util.HashMap;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -252,28 +251,33 @@ public class Platformer implements Runnable, KeyListener {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
+                    // Paints the end goal.
                 g.setColor(flag.color);
                 g.fillRect(flag.x - frame1xOffset, flag.y - frame1yOffset, flag.width, flag.height);
 
-
+                    // Paints player 2.
                 if (!player2.facingRight) {
                     g.drawImage(player2.spriteImage, (player2.x + 100) - frame1xOffset, player2.y - frame1yOffset, -player2.width, player2.height, this);
                 } else {
                     g.drawImage(player2.spriteImage, (player2.x) - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height, this);
                 }
 
+                    // Paints player 1.
                 if (!player1.facingRight) {
                     g.drawImage(player1.spriteImage, (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, this);
                 } else {
                     g.drawImage(player1.spriteImage, (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, this);
                 }
 
+                    // Paints player 2's spear when he attacks.
                 g.setColor(spear.color);
                 g.fillRect(spear.x - frame1xOffset, spear.y - frame1yOffset, spear.width, spear.height);
 
+                    // Paints player 1's icicle when he attacks.
                 g.setColor(icicle.color);
                 g.fillRect(icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height);
 
+                    // Paints the level.
                 for (int x = 0; x < objects[1].length; x++) {
                     for (int y = 0; y < objects.length; y++) {
                         if (objects[y][x] != null) {
@@ -289,27 +293,33 @@ public class Platformer implements Runnable, KeyListener {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
+                    // Paints the end goal.
                 g.setColor(flag.color);
                 g.fillRect(flag.x - frame2xOffset, flag.y - frame2yOffset, flag.width, flag.height);
 
+                    // Paints player 1.
                 if (!player1.facingRight) {
                     g.drawImage(player1.spriteImage, (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, this);
                 } else {
                     g.drawImage(player1.spriteImage, (player1.x) - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height, this);
                 }
 
+                    // Paints player 2.
                 if (!player2.facingRight) {
                     g.drawImage(player2.spriteImage, (player2.x + 100) - frame2xOffset, player2.y - frame2yOffset, -player2.width, player2.height, this);
                 } else {
                     g.drawImage(player2.spriteImage, (player2.x) - frame2xOffset, player2.y - frame2yOffset, player2.width, player2.height, this);
                 }
 
+                    // Paints player 1's icicle when he attacks.
                 g.setColor(icicle.color);
                 g.fillRect(icicle.x - frame2xOffset, icicle.y - frame2yOffset, icicle.width, icicle.height);
 
+                    // Paints player 2's spear when he attacks.
                 g.setColor(spear.color);
                 g.fillRect(spear.x - frame2xOffset, spear.y - frame2yOffset, spear.width, spear.height);
 
+                    // Paints the level.
                 for (int x = 0; x < objects[1].length; x++) {
                     for (int y = 0; y < objects.length; y++) {
                         if (objects[y][x] != null) {
@@ -334,7 +344,7 @@ public class Platformer implements Runnable, KeyListener {
         frame2.addKeyListener(this);
         frame2.setFocusable(true);
     }
-    
+
     /**
      * Called every frame to determine what state the player is in.
      * Used to assign animations at the correct times.
@@ -537,6 +547,8 @@ public class Platformer implements Runnable, KeyListener {
 
         /**
          * Sets the GameObject's sprite.
+         * 
+         * @param path the file path to be set to, as passed through the spriteSet Map.
          */
         public void setSprite(String path) {
             if (!path.equals(spritePath)) {
