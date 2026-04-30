@@ -77,7 +77,9 @@ public class Platformer implements Runnable, KeyListener {
         GROUNDED,
         AIRBORNE,
         RUNNING,
-        JUMPING
+        JUMPING,
+        FALLING,
+        STUNNED
     }
 
     private static int player1JumpTimer = 0;
@@ -166,16 +168,19 @@ public class Platformer implements Runnable, KeyListener {
         "idle", "Platformer/ArtAssets/iceGuyIdle.gif",
         "jump", "Platformer/ArtAssets/iceGuyJump.gif",
         "run", "Platformer/ArtAssets/iceGuyRun.gif",
-        "air", "Platformer/ArtAssets/iceGuyAir.gif"
+        "air", "Platformer/ArtAssets/iceGuyAir.gif",
+        "fall", "Platformer/ArtAssets/iceGuyFall.gif",
+        "burned", "Platformer/ArtAssets/iceGuyBurn.gif"
     );
 
     public static GameObject player2;
     public static Map<String, String> p2Sprites = Map.of(
-        "still", "Platformer/ArtAssets/fireGuy.png",
         "idle", "Platformer/ArtAssets/fireGuyIdle.gif",
         "jump", "Platformer/ArtAssets/fireGuyJump.gif",
         "run", "Platformer/ArtAssets/fireGuyRun.gif",
-        "air", "Platformer/ArtAssets/fireGuyAir.gif"
+        "air", "Platformer/ArtAssets/fireGuyAir.gif",
+        "fall", "Platformer/ArtAssets/fireGuyFall.gif",
+        "frozen", "Platformer/ArtAssets/fireGuyFreeze.gif"
     );
 
     //private static JButton b;
@@ -286,7 +291,7 @@ public class Platformer implements Runnable, KeyListener {
 
     public static int updatePlayerState(GameObject player, int jumpTimer) {
 
-        boolean isGrounded = player1.ySpeed == 0;
+        boolean isGrounded = (player == player1 ? player1CollisionY : player2CollisionY);
         PlayerState currentState = player.state;
         PlayerState newState;
 
@@ -294,7 +299,11 @@ public class Platformer implements Runnable, KeyListener {
             newState = PlayerState.JUMPING;
             jumpTimer--;
         } else if (!isGrounded) {
-            newState = PlayerState.AIRBORNE;
+            if (currentState == PlayerState.JUMPING || currentState == PlayerState.AIRBORNE) {
+                newState = PlayerState.AIRBORNE;
+            } else {
+                newState = PlayerState.FALLING;
+            }
         } else {
             if (Math.abs(player.xSpeed) > 0) {
                 newState = PlayerState.RUNNING;
@@ -652,7 +661,7 @@ public class Platformer implements Runnable, KeyListener {
                 if (w) {   // Player 1 jump
                    store = player1.ySpeed;
                     player1.ySpeed = 1;
-                    if (checkYCollision(player1)) {
+                    if (checkYCollision(player1) && player1JumpTimer == 0) {
                         player1.ySpeed = -playerJump;
                         player1JumpTimer = 18;
                     } else {
@@ -691,9 +700,9 @@ public class Platformer implements Runnable, KeyListener {
                 if (up) {
                     store = player2.ySpeed;
                     player2.ySpeed = 1;
-                    if (checkYCollision(player2)) {
+                    if (checkYCollision(player2) && player2JumpTimer == 0) {
                         player2.ySpeed = -playerJump;
-                        player2JumpTimer = FPS;
+                        player2JumpTimer = 21;
                     } else {
                         player2.ySpeed = store;
                     }
@@ -887,30 +896,35 @@ public class Platformer implements Runnable, KeyListener {
                 player2JumpTimer = updatePlayerState(player2, player2JumpTimer);
 
 
-                    // Set animations
+                    // Setting player 1 animations
                 if (player1.state == PlayerState.AIRBORNE) {
                     player1.setSprite("air");
                 } else if (player1.state == PlayerState.RUNNING) {
                     player1.setSprite("run");
                 } else if (player1.state == PlayerState.JUMPING) {
                     player1.setSprite("jump");
+                } else if (player1.state == PlayerState.FALLING) {
+                    player1.setSprite("fall");
+                } else if (player1.state == PlayerState.STUNNED) {
+                    player1.setSprite("burned");
                 } else {
                     player1.setSprite("idle");
                 }
 
-                player2.setSprite("idle");
-
-                /*
+                    // Setting player 2 animations
                 if (player2.state == PlayerState.AIRBORNE) {
                     player2.setSprite("air");
-                } else if (player2.state == PlayerState.RUNNING) {
-                    player2.setSprite("run");
                 } else if (player2.state == PlayerState.JUMPING) {
                     player2.setSprite("jump");
+                } else if (player2.state == PlayerState.FALLING) {
+                    player2.setSprite("fall");
+                } else if (player2.state == PlayerState.STUNNED) {
+                    player2.setSprite("frozen");
                 } else {
                     player2.setSprite("idle");
                 }
-                */
+
+                // System.out.println("JumpTimer for P2: " + player2JumpTimer);
 
                 //Update player posistion 
                 player1.x += player1.xSpeed;
