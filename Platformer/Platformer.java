@@ -21,9 +21,29 @@ import javax.swing.*;
 public class Platformer implements Runnable, KeyListener {
 
     /**
+     * Time until player 1 gets stuuned, in frames
+     */
+    private static int player1Stun = 3 * 60;
+
+    /**
+     * Time until player 2 gets stuuned, in frames
+     */
+    private static int player2Stun = 3 * 60;
+
+    /**
      * Time until player 1 can fire another icicle, in frames
      */
     private static int icicleCooldown = 3 * 60;
+
+    /**
+     * Speed of the icicle, in pixels/frame.
+     */
+    private static int icicleSpeed = 20;
+
+     /**
+     * Time until player 2 can use the spear, in frames
+     */
+    private static int spearCooldown = 3 * 60;
 
     /**
      * Acceleration for player characters, in pixels/frame.
@@ -143,6 +163,9 @@ public class Platformer implements Runnable, KeyListener {
     private static int frame2xOffset = 0;
     private static int frame2yOffset = 0;
     private static int icicleTimer = 0;
+    private static int spearTimer = 0;
+    private static int player1Stunned = 0;
+    private static int player2Stunned = 0;
     private static JFrame frame1;
     private static JFrame frame2;
 
@@ -174,6 +197,7 @@ public class Platformer implements Runnable, KeyListener {
     );
 
     public static GameObject player2;
+    public static GameObject spear;
     public static Map<String, String> p2Sprites = Map.of(
         "idle", "Platformer/ArtAssets/fireGuyIdle.gif",
         "jump", "Platformer/ArtAssets/fireGuyJump.gif",
@@ -197,10 +221,11 @@ public class Platformer implements Runnable, KeyListener {
         // This is the old constructor call for player 1, which just makes him a green square.
         //player1 = new GameObject("Player 1",0,0,100,100, Color.GREEN);
 
-        //Constructor calls for player characters
+        //Constructor calls for player characters and items
         player1 = new GameObject("Player 1", 0, 0, 100, 100, p1Sprites);
         icicle = new GameObject("Icicle", -100, -100, 100,20,Color.CYAN);
         player2 = new GameObject("Player 2", 0, 0, 100, 100, p2Sprites);
+        spear = new GameObject("Spear", -100, -100, 200,20,Color.ORANGE);
 
         setLayout();
 
@@ -226,14 +251,17 @@ public class Platformer implements Runnable, KeyListener {
                     g.drawImage(player2.spriteImage, (player2.x) - frame1xOffset, player2.y - frame1yOffset, player2.width, player2.height, this);
                 }
 
-                g.setColor(icicle.color);
-                g.fillRect(icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height);
-
                 if (!player1.facingRight) {
                     g.drawImage(player1.spriteImage, (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset, -player1.width, player1.height, this);
                 } else {
                     g.drawImage(player1.spriteImage, (player1.x) - frame1xOffset, player1.y - frame1yOffset, player1.width, player1.height, this);
                 }
+
+                g.setColor(spear.color);
+                g.fillRect(spear.x - frame1xOffset, spear.y - frame1yOffset, spear.width, spear.height);
+
+                g.setColor(icicle.color);
+                g.fillRect(icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height);
 
                 for (int x = 0; x < objects[1].length; x++) {
                     for (int y = 0; y < objects.length; y++) {
@@ -263,6 +291,12 @@ public class Platformer implements Runnable, KeyListener {
                 } else {
                     g.drawImage(player2.spriteImage, (player2.x) - frame2xOffset, player2.y - frame2yOffset, player2.width, player2.height, this);
                 }
+
+                g.setColor(icicle.color);
+                g.fillRect(icicle.x - frame2xOffset, icicle.y - frame2yOffset, icicle.width, icicle.height);
+
+                g.setColor(spear.color);
+                g.fillRect(spear.x - frame2xOffset, spear.y - frame2yOffset, spear.width, spear.height);
 
                 for (int x = 0; x < objects[1].length; x++) {
                     for (int y = 0; y < objects.length; y++) {
@@ -582,6 +616,20 @@ public class Platformer implements Runnable, KeyListener {
         }
     }
 
+    public static boolean checkSingleCollision(GameObject Object1, GameObject Object2) {
+        boolean r = false;
+        if (Object1.x > Object2.x && Object1.x < Object2.x + Object2.width && Object1.y > Object2.y && Object1.y < Object2.y + Object2.height) {
+            r = true;
+        } else if (Object1.x + Object1.width > Object2.x && Object1.x < Object2.x + Object2.width && Object1.y > Object2.y && Object1.y < Object2.y + Object2.height) {
+            r = true;
+        } else if (Object1.x > Object2.x && Object1.x < Object2.x + Object2.width && Object1.y + Object1.height > Object2.y && Object1.y + Object1.height < Object2.y + Object2.height) {
+            r = true;
+        } else if (Object1.x + Object1.width > Object2.x && Object1.x < Object2.x + Object2.width && Object1.y + Object1.height > Object2.y && Object1.y + Object1.height <= Object2.y + Object2.height) {
+            r = true;
+        }
+        return r;
+    }
+
     public static boolean checkCollision(GameObject player) {
         boolean r = false;
         GameObject wall = null;
@@ -658,6 +706,20 @@ public class Platformer implements Runnable, KeyListener {
                 // down = s;
                 // right = d;
                 //Player 1 keys
+                if(player1Stunned > 0)
+                {
+                    w = false;
+                    a = false;
+                    s = false;
+                    d = false;
+                }
+                if(player2Stunned > 0)
+                {
+                    up = false;
+                    left = false;
+                    down = false;
+                    right = false;
+                }
                 if (w) {   // Player 1 jump
                    store = player1.ySpeed;
                     player1.ySpeed = 1;
@@ -677,20 +739,33 @@ public class Platformer implements Runnable, KeyListener {
                 }
                 if (s && icicleTimer <= 0) // Player 1 ability: shoot icicle
                 {
-                    //player1.ySpeed += playerSpeed;
                     icicleTimer = icicleCooldown;
                     icicle.x = player1.x;
                     icicle.y = player1.y + (player1.height/2 - icicle.height/2);
                     if(player1.facingRight)
                     {
-                        icicle.xSpeed = 10;
+                        icicle.xSpeed = icicleSpeed;
                     }
                     else
                     {
-                        icicle.xSpeed = -10;
+                        icicle.xSpeed = -icicleSpeed;
+                    }
+                }
+                if(icicle.xSpeed != 0)
+                {
+                    if(checkSingleCollision(icicle, player2))
+                    {
+                        player2Stunned = player2Stun;
+                        player2.xSpeed = icicle.xSpeed;
                     }
                 }
                 icicleTimer--;
+                if(icicleTimer <= 0)
+                {
+                    icicle.x = -100;
+                    icicle.y = -100;
+                    icicle.xSpeed = 0;
+                }
                 if (d) // Player 1 move right
                 {
                     player1.xSpeed += playerSpeed;
@@ -713,9 +788,37 @@ public class Platformer implements Runnable, KeyListener {
                     player2.xSpeed -= playerSpeed;
                     player2.setDirection(false);
                 }
-                if (down) {
-                    //player2.ySpeed += playerSpeed;
+                if (down && spearTimer <= 0) // Player 2 ability: use spear
+                {
+                    spearTimer = spearCooldown;
+                    spear.x = player2.x;
+                    spear.y = player2.y + (player2.height/2 - spear.height/2);
+                    if(player2.facingRight)
+                    {
+                        spear.x += player2.width;
+                        spear.xSpeed = 20;
+                    }
+                    else
+                    {
+                        spear.x -= player2.width + 100;
+                        spear.xSpeed = -20;
+                    }
                 }
+                if(spearTimer < spearCooldown - 30)
+                {
+                    spear.x = -100;
+                    spear.y = -100;
+                    spear.xSpeed = 0;
+                }
+                if(spear.xSpeed != 0)
+                {
+                    if(checkSingleCollision(spear, player1))
+                    {
+                        player1Stunned = player1Stun;
+                        player1.xSpeed = spear.xSpeed;
+                    }
+                }
+                spearTimer--;
                 if (right) {
                     player2.xSpeed += playerSpeed;
                     player2.setDirection(true);
@@ -752,10 +855,10 @@ public class Platformer implements Runnable, KeyListener {
                 //}
                 //Player 1 max speed
                 if (player1.xSpeed > playerMaxSpeed) {
-                    player1.xSpeed = playerMaxSpeed;
+                    player1.xSpeed--;
                 }
                 if (player1.xSpeed < -playerMaxSpeed) {
-                    player1.xSpeed = -playerMaxSpeed;
+                    player1.xSpeed++;
                 }
                 if (player1.ySpeed > playerMaxSpeed) {
                     player1.ySpeed = playerMaxSpeed;
@@ -766,10 +869,10 @@ public class Platformer implements Runnable, KeyListener {
                 // }
                 //Player 2 max speed
                 if (player2.xSpeed > playerMaxSpeed) {
-                    player2.xSpeed = playerMaxSpeed;
+                    player2.xSpeed--;
                 }
                 if (player2.xSpeed < -playerMaxSpeed) {
-                    player2.xSpeed = -playerMaxSpeed;
+                    player2.xSpeed++;
                 }
                 if (player2.ySpeed > playerMaxSpeed) {
                     player2.ySpeed = playerMaxSpeed;
@@ -936,6 +1039,8 @@ public class Platformer implements Runnable, KeyListener {
                 //Reset frame
                 frame1.repaint();
                 frame2.repaint();
+                player1Stunned--;
+                player2Stunned--;
             }
         });
         clock.start();
