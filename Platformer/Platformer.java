@@ -91,6 +91,11 @@ public class Platformer implements Runnable, KeyListener {
     private static int R = 1 - A;
 
     /**
+     * A variable representing a "removed" wall in int[][] layout.
+     */
+    private static int F = 3;
+
+    /**
      * current animation state of a player
      */
     public enum PlayerState {
@@ -206,6 +211,7 @@ public class Platformer implements Runnable, KeyListener {
         "fall", "Platformer/ArtAssets/fireGuyFall.gif",
         "frozen", "Platformer/ArtAssets/fireGuyFreeze.gif"
     );
+    public static GameObject flag;
 
     //private static JButton b;
     @Override
@@ -226,6 +232,7 @@ public class Platformer implements Runnable, KeyListener {
         icicle = new GameObject("Icicle", -100, -100, 100,20,Color.CYAN);
         player2 = new GameObject("Player 2", 0, 0, 100, 100, p2Sprites);
         spear = new GameObject("Spear", -100, -100, 200,20,Color.ORANGE);
+        flag = new GameObject("Flag", -100, -100, 20,100,Color.YELLOW);
 
         setLayout();
 
@@ -244,6 +251,10 @@ public class Platformer implements Runnable, KeyListener {
             @Override
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
+
+                g.setColor(flag.color);
+                g.fillRect(flag.x - frame1xOffset, flag.y - frame1yOffset, flag.width, flag.height);
+
 
                 if (!player2.facingRight) {
                     g.drawImage(player2.spriteImage, (player2.x + 100) - frame1xOffset, player2.y - frame1yOffset, -player2.width, player2.height, this);
@@ -278,8 +289,9 @@ public class Platformer implements Runnable, KeyListener {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-                //g.setColor(player1.color);
-                //g.fillRect(player1.x - frame2xOffset, player1.y - frame2yOffset, player1.width, player1.height);
+                g.setColor(flag.color);
+                g.fillRect(flag.x - frame2xOffset, flag.y - frame2yOffset, flag.width, flag.height);
+
                 if (!player1.facingRight) {
                     g.drawImage(player1.spriteImage, (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset, -player1.width, player1.height, this);
                 } else {
@@ -334,7 +346,7 @@ public class Platformer implements Runnable, KeyListener {
             jumpTimer--;
         } else if (!isGrounded) {
             if (currentState == PlayerState.JUMPING || currentState == PlayerState.AIRBORNE) {
-                newState = PlayerState.AIRBORNE;
+            newState = PlayerState.AIRBORNE;
             } else {
                 newState = PlayerState.FALLING;
             }
@@ -611,6 +623,11 @@ public class Platformer implements Runnable, KeyListener {
                     player1.y = y * 100;
                     player2.x = x * 100;
                     player2.y = y * 100;
+                }
+                else if (layout[y][x] == 3) {
+                    //Flag
+                    flag.x = (x * 100) + (50 - (flag.width/2));
+                    flag.y = y * 100;
                 }
             }
         }
@@ -1041,6 +1058,14 @@ public class Platformer implements Runnable, KeyListener {
                 frame2.repaint();
                 player1Stunned--;
                 player2Stunned--;
+                if(checkSingleCollision(player1, flag))
+                {
+                    //If player one reaches the flag
+                }
+                if(checkSingleCollision(player2, flag))
+                {
+                    //If player two reaches the flag
+                }
             }
         });
         clock.start();
