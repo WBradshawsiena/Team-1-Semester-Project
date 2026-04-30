@@ -197,7 +197,7 @@ public class Platformer implements Runnable, KeyListener {
         "run", "Platformer/ArtAssets/iceGuyRun.gif",
         "air", "Platformer/ArtAssets/iceGuyAir.gif",
         "fall", "Platformer/ArtAssets/iceGuyFall.gif",
-        "burned", "Platformer/ArtAssets/iceGuyBurn.gif"
+        "burned", "Platformer/ArtAssets/iceGuyBurned.gif"
     );
 
     public static GameObject player2;
