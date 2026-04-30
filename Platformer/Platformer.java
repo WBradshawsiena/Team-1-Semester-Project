@@ -334,11 +334,7 @@ public class Platformer implements Runnable, KeyListener {
         frame2.addKeyListener(this);
         frame2.setFocusable(true);
     }
-
-    public static void updatePlayerState(GameObject player, PlayerState state) {
-        player.state = state;
-    }
-
+    
     /**
      * Called every frame to determine what state the player is in.
      * Used to assign animations at the correct times.
