@@ -193,6 +193,9 @@ public class Platformer implements Runnable, KeyListener {
     /** Player 1. */
     public static GameObject player1;
 
+    /** Used to determine whether player 1 was facing left or right when firing his icicle. */
+    public static boolean facingRightWhenLaunched;
+
     /** The length of player 1's attack animation. */
     public static final int ATTACK_LENGTH = 13;
 
@@ -246,7 +249,7 @@ public class Platformer implements Runnable, KeyListener {
 
         //Constructor calls for player characters and items
         player1 = new GameObject("Player 1", 0, 0, 100, 100, p1Sprites);
-        icicle = new GameObject("Icicle", -100, -100, 100,20,Color.CYAN);
+        icicle = new GameObject("Icicle", -100, -100, 100,20, "Platformer/ArtAssets/icicle.png");
         player2 = new GameObject("Player 2", 0, 0, 100, 100, p2Sprites);
         spear = new GameObject("Spear", -100, -100, 200,20,Color.ORANGE);
         flag = new GameObject("Flag", -100, -100, 20,100,Color.YELLOW);
@@ -292,8 +295,11 @@ public class Platformer implements Runnable, KeyListener {
                 g.fillRect(spear.x - frame1xOffset, spear.y - frame1yOffset, spear.width, spear.height);
 
                     // Paints player 1's icicle when he attacks.
-                g.setColor(icicle.color);
-                g.fillRect(icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height);
+                if (!facingRightWhenLaunched) {
+                    g.drawImage(icicle.getImage(), (icicle.x + 100) - frame1xOffset, icicle.y - frame1yOffset, -icicle.width, icicle.height, this);
+                } else {
+                    g.drawImage(icicle.getImage(), icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height, this);
+                }
 
                     // Paints the level.
                 for (int x = 0; x < objects[1].length; x++) {
@@ -330,9 +336,11 @@ public class Platformer implements Runnable, KeyListener {
                 }
 
                     // Paints player 1's icicle when he attacks.
-                g.setColor(icicle.color);
-                g.fillRect(icicle.x - frame2xOffset, icicle.y - frame2yOffset, icicle.width, icicle.height);
-
+                if (!facingRightWhenLaunched) {
+                    g.drawImage(icicle.getImage(), (icicle.x + 100) - frame1xOffset, icicle.y - frame1yOffset, -icicle.width, icicle.height, this);
+                } else {
+                    g.drawImage(icicle.getImage(), icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height, this);
+                }
                     // Paints player 2's spear when he attacks.
                 g.setColor(spear.color);
                 g.fillRect(spear.x - frame2xOffset, spear.y - frame2yOffset, spear.width, spear.height);
@@ -364,7 +372,7 @@ public class Platformer implements Runnable, KeyListener {
     }
 
     /**
-     * Called every frame to determine what state the player is in.
+     * Called to determine what state the player is in.
      * Used to assign animations at the correct times.
      * 
      * @param player the player being assessed
@@ -821,6 +829,7 @@ public class Platformer implements Runnable, KeyListener {
                     {
                         icicle.xSpeed = -icicleSpeed;
                     }
+                    facingRightWhenLaunched = player1.facingRight;
                 }
                 if(icicle.xSpeed != 0)
                 {
