@@ -27,7 +27,7 @@ public class Platformer implements Runnable, KeyListener {
     /**
      * Time player 1 gets stunned for, in frames
      */
-    private static int player1Stun = 2 * 60;
+    private static int player1Stun = 60;
 
     /**
      * Time player 2 gets stunned for, in frames
@@ -838,6 +838,14 @@ public class Platformer implements Runnable, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             right = false;
         }
+    }
+
+    /**
+     * Dummy method to satisfy KeyListener.
+     */
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // System.out.print(e.getKeyChar());
     }
 
     /**
