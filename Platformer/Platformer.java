@@ -194,7 +194,7 @@ public class Platformer implements Runnable, KeyListener {
     public static GameObject player1;
 
     /** Used to determine whether player 1 was facing left or right when firing his icicle. */
-    public static boolean facingRightWhenLaunched;
+    public static boolean p1facingRightWhenLaunched;
 
     /** The length of player 1's attack animation. */
     public static final int ATTACK_LENGTH = 13;
@@ -218,6 +218,9 @@ public class Platformer implements Runnable, KeyListener {
 
     /** The rectangle that acts as Player 2's spear attack hurtbox. */
     public static GameObject spear;
+
+    /** Used to determine whether player 2 was facing left or right when casting his spear. */
+    public static boolean p2facingRightWhenLaunched;
 
     /** Map that assigns simple keywords to filepaths for player 2's sprite animations. */
     public static Map<String, String> p2Sprites = Map.of(
@@ -252,7 +255,7 @@ public class Platformer implements Runnable, KeyListener {
         player1 = new GameObject("Player 1", 0, 0, 100, 100, p1Sprites);
         icicle = new GameObject("Icicle", -100, -100, 100,20, "Platformer/ArtAssets/icicle.png");
         player2 = new GameObject("Player 2", 0, 0, 100, 100, p2Sprites);
-        spear = new GameObject("Spear", -100, -100, 200, 20, Color.ORANGE);
+        spear = new GameObject("Spear", -100, -100, 200, 20, "Platformer/ArtAssets/spear.gif");
         flag = new GameObject("Flag", -100, -100, 20, 100, Color.YELLOW);
 
         loadMapsFromFile("Platformer/Levels2.txt");
@@ -311,11 +314,14 @@ public class Platformer implements Runnable, KeyListener {
                 }
 
                 // Paints player 2's spear when he attacks.
-                g.setColor(spear.color);
-                g.fillRect(spear.x - frame1xOffset, spear.y - frame1yOffset, spear.width, spear.height);
+                if (!p2facingRightWhenLaunched) {
+                    g.drawImage(spear.getImage(), (spear.x + 100) - frame1xOffset, spear.y - frame1yOffset, -spear.width, spear.height, this);
+                } else {
+                    g.drawImage(spear.getImage(), spear.x - frame1xOffset, spear.y - frame1yOffset, spear.width, spear.height, this);
+                }
 
                 // Paints player 1's icicle when he attacks.
-                if (!facingRightWhenLaunched) {
+                if (!p1facingRightWhenLaunched) {
                     g.drawImage(icicle.getImage(), (icicle.x + 100) - frame1xOffset, icicle.y - frame1yOffset, -icicle.width, icicle.height, this);
                 } else {
                     g.drawImage(icicle.getImage(), icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height, this);
@@ -373,15 +379,18 @@ public class Platformer implements Runnable, KeyListener {
                 }
 
                 // Paints player 1's icicle when he attacks.
-                if (!facingRightWhenLaunched) {
+                if (!p1facingRightWhenLaunched) {
                     g.drawImage(icicle.getImage(), (icicle.x + 100) - frame2xOffset, icicle.y - frame2yOffset, -icicle.width, icicle.height, this);
                 } else {
                     g.drawImage(icicle.getImage(), icicle.x - frame2xOffset, icicle.y - frame2yOffset, icicle.width, icicle.height, this);
                 }
 
                 // Paints player 2's spear when he attacks.
-                g.setColor(spear.color);
-                g.fillRect(spear.x - frame2xOffset, spear.y - frame2yOffset, spear.width, spear.height);
+                if (!p2facingRightWhenLaunched) {
+                    g.drawImage(spear.getImage(), (spear.x + 100) - frame2xOffset, spear.y - frame2yOffset, -spear.width, spear.height, this);
+                } else {
+                    g.drawImage(spear.getImage(), spear.x - frame2xOffset, spear.y - frame2yOffset, spear.width, spear.height, this);
+                }
 
                 // Paints the level.
                 for (int x = 0; x < objects[1].length; x++) {
@@ -1032,7 +1041,7 @@ public class Platformer implements Runnable, KeyListener {
                     } else {
                         icicle.xSpeed = -icicleSpeed;
                     }
-                    facingRightWhenLaunched = player1.facingRight;
+                    p1facingRightWhenLaunched = player1.facingRight;
                 }
                 if (icicle.xSpeed != 0) {
                     if (checkSingleCollision(icicle, player2)) {
@@ -1080,6 +1089,7 @@ public class Platformer implements Runnable, KeyListener {
                         spear.x -= player2.width + 100;
                         spear.xSpeed = -20;
                     }
+                    p2facingRightWhenLaunched = player2.facingRight;
                 }
                 if (spearTimer < spearCooldown - 30) {
                     spear.x = -100;
