@@ -27,12 +27,12 @@ public class Platformer implements Runnable, KeyListener {
     /**
      * Time until player 1 gets stuuned, in frames
      */
-    private static int player1Stun = 3 * 60;
+    private static int player1Stun = 2 * 60;
 
     /**
      * Time until player 2 gets stuuned, in frames
      */
-    private static int player2Stun = 3 * 60;
+    private static int player2Stun = 2 * 60;
 
     /**
      * Time until player 1 can fire another icicle, in frames
@@ -256,7 +256,7 @@ public class Platformer implements Runnable, KeyListener {
         icicle = new GameObject("Icicle", -100, -100, 100,20, "Platformer/ArtAssets/icicle.png");
         player2 = new GameObject("Player 2", 0, 0, 100, 100, p2Sprites);
         spear = new GameObject("Spear", -100, -100, 200, 20, "Platformer/ArtAssets/spear.gif");
-        flag = new GameObject("Flag", -100, -100, 20, 100, Color.YELLOW);
+        flag = new GameObject("Flag", -100, -100, 100, 100, "Platformer/ArtAssets/flag.png");
 
         loadMapsFromFile("Platformer/Levels2.txt");
         loadRandomMap();
@@ -267,6 +267,7 @@ public class Platformer implements Runnable, KeyListener {
         frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame1.setPreferredSize(new Dimension(scale, scale + barSize));
         frame1.setResizable(false);
+
         frame2 = new JFrame("Player 2");
         frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame2.setPreferredSize(new Dimension(scale, scale + barSize));
@@ -295,8 +296,7 @@ public class Platformer implements Runnable, KeyListener {
                 }
 
                 // Paints the end goal.
-                g.setColor(flag.color);
-                g.fillRect(flag.x - frame1xOffset, flag.y - frame1yOffset, flag.width, flag.height);
+                g.drawImage(flag.spriteImage, flag.x - frame1xOffset, flag.y - frame1yOffset, flag.width, flag.height, this);
 
                 // Paints player 2.
                 if (!player2.facingRight) {
@@ -365,8 +365,7 @@ public class Platformer implements Runnable, KeyListener {
                 }
 
                 // Paints the end goal.
-                g.setColor(flag.color);
-                g.fillRect(flag.x - frame2xOffset, flag.y - frame2yOffset, flag.width, flag.height);
+                g.drawImage(flag.spriteImage, flag.x - frame1xOffset, flag.y - frame1yOffset, flag.width, flag.height, this);
 
                 // Paints player 1.
                 if (!player1.facingRight) {
