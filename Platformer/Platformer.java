@@ -777,8 +777,8 @@ public class Platformer implements Runnable, KeyListener {
         player2Stunned = 0;
         player1JumpTimer = 0;
         player2JumpTimer = 0;
-        icicleTimer = 0;
-        spearTimer = 0;
+        icicleTimer = icicleCooldown - ATTACK_LENGTH;
+        spearTimer = spearCooldown - ATTACK_LENGTH;
         icicle.x = -100;
         icicle.y = -100;
         icicle.xSpeed = 0;
