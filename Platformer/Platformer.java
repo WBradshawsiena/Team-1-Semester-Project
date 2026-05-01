@@ -310,7 +310,6 @@ public class Platformer implements Runnable, KeyListener {
     /** The tile that triggers end-of-level logic when touched. */
     public static GameObject flag;
 
-    // private static JButton b;
     @Override
     public void run() {
         if (System.getProperty("os.name").toLowerCase().contains("mac")) {
@@ -321,8 +320,7 @@ public class Platformer implements Runnable, KeyListener {
             barSize = 27;
         }
 
-        // This is the old constructor call for player 1, which just makes him a green
-        // square.
+            // This is the old constructor call for player 1, which just makes him a green square.
         // player1 = new GameObject("Player 1",0,0,100,100, Color.GREEN);
 
         // Constructor calls for player characters and items
@@ -346,10 +344,13 @@ public class Platformer implements Runnable, KeyListener {
         frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame2.setPreferredSize(new Dimension(scale, scale + barSize));
         frame2.setResizable(false);
-        // b = new JButton("Test");
-        // b.addActionListener(this);
 
         panel1 = new JPanel() {
+            /**
+             * Overridden paintComponent method. Calls the original paintComponent,
+             * and then draws all GameObjects to be layered in the correct order.
+             * Player 1 is drawn over player 2 in this method.
+             */
             @Override
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -419,6 +420,11 @@ public class Platformer implements Runnable, KeyListener {
             }
         };
         panel2 = new JPanel() {
+            /**
+             * Overridden paintComponent method. Calls the original paintComponent,
+             * and then draws all GameObjects to be layered in the correct order.
+             * Player 2 is drawn over player 1 in this method.
+             */
             @Override
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -490,12 +496,15 @@ public class Platformer implements Runnable, KeyListener {
 
         frame1.setLocation(0, 0);
         frame2.setLocation(1000, 0);
+
         frame1.add(panel1);
         frame1.pack();
         frame1.setVisible(true);
+
         frame2.add(panel2);
         frame2.pack();
         frame2.setVisible(true);
+
         frame1.addKeyListener(this);
         frame1.setFocusable(true);
         frame2.addKeyListener(this);
@@ -634,12 +643,28 @@ public class Platformer implements Runnable, KeyListener {
          */
         public boolean facingRight = true;
 
+        /**
+         * Constructs a GameObject with a name and location.
+         * 
+         * @param name the GameObject's name
+         * @param x the GameObject's x-coordinate
+         * @param y the GameObject's y-coordinate
+         */
         public GameObject(String name, int x, int y) {
             this.name = name;
             this.x = x;
             this.y = y;
         }
 
+        /**
+         * Constructs a GameObject with a name, location, and size.
+         * 
+         * @param name the GameObject's name
+         * @param x the GameObject's x-coordinate
+         * @param y the GameObject's y-coordinate
+         * @param width the width of the GameObject, in pixels
+         * @param height the height of the GameObject, in pixels
+         */
         public GameObject(String name, int x, int y, int width, int height) {
             this.name = name;
             this.x = x;
@@ -648,6 +673,16 @@ public class Platformer implements Runnable, KeyListener {
             this.height = height;
         }
 
+        /**
+         * Constructs a GameObject with a name, location, size, and color.
+         * 
+         * @param name the GameObject's name
+         * @param x the GameObject's x-coordinate
+         * @param y the GameObject's y-coordinate
+         * @param width the width of the GameObject, in pixels
+         * @param height the height of the GameObject, in pixels
+         * @param color the color of the GameObject
+         */
         public GameObject(String name, int x, int y, int width, int height, Color color) {
             this.name = name;
             this.x = x;
@@ -661,11 +696,11 @@ public class Platformer implements Runnable, KeyListener {
          * Constructs a GameObject with a specified name, coordinates, size, and
          * sprite.
          *
-         * @param name           the name of the GameObject
+         * @param name           the GameObject's name
          * @param x              the GameObject's x-coordinate
          * @param y              the GameObject's y-coordinate
-         * @param width          the width of the GameObject
-         * @param height         the height of the GameObject
+         * @param width          the width of the GameObject, in pixels
+         * @param height         the height of the GameObject, in pixels
          * @param spriteFileName the file name of the sprite to represent the
          *                       GameObject.
          */
@@ -683,13 +718,12 @@ public class Platformer implements Runnable, KeyListener {
          * Constructs a GameObject with a specified name, coordinates, size, and
          * sprite set.
          *
-         * @param name    the name of the GameObject
+         * @param name    the GameObject's name
          * @param x       the GameObject's x-coordinate
          * @param y       the GameObject's y-coordinate
-         * @param width   the width of the GameObject
-         * @param height  the height of the GameObject
-         * @param sprites the array of ImageIcons that will be assigned to the
-         *                SpriteSet.
+         * @param width   the width of the GameObject, in pixels
+         * @param height  the height of the GameObject, in pixels
+         * @param sprites the array of ImageIcons that will be assigned to its SpriteSet.
          */
         public GameObject(String name, int x, int y, int width, int height, Map<String, String> sprites) {
             this.name = name;
@@ -742,6 +776,10 @@ public class Platformer implements Runnable, KeyListener {
         }
     }
 
+    /**
+     * Overridden keyPressed method that assigns the 
+     * correct boolean values to each key boolean.
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_W) {
@@ -770,6 +808,10 @@ public class Platformer implements Runnable, KeyListener {
         }
     }
 
+    /**
+     * Overridden keyPressed method that assigns the 
+     * correct boolean values to each key boolean.
+     */
     @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_W) {
@@ -798,11 +840,12 @@ public class Platformer implements Runnable, KeyListener {
         }
     }
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-        // System.out.print(e.getKeyChar());
-    }
-
+    /**
+     * Loads the 2D arrays in a text file to convert 
+     * them into usable layouts for levels.
+     * 
+     * @param path the filepath of the text file
+     */
     public static void loadMapsFromFile(String path) {
         raceMaps.clear();
         try {
@@ -835,6 +878,12 @@ public class Platformer implements Runnable, KeyListener {
         }
     }
 
+    /**
+     * Draws the sprites of each player in scoreboard position.
+     * 
+     * @param g graphics object
+     * @param obs observer
+     */
     public static void drawWinSprites(Graphics g, java.awt.Component obs) {
         if (!gameState.equals("ROUND_END") && !gameState.equals("GAME_OVER"))
             return;
@@ -853,6 +902,9 @@ public class Platformer implements Runnable, KeyListener {
         }
     }
 
+    /**
+     * Loads a random level from raceMaps.
+     */
     public static void loadRandomMap() {
         if (raceMaps.isEmpty()) {
             return;
@@ -860,6 +912,7 @@ public class Platformer implements Runnable, KeyListener {
         layout = raceMaps.get(rand.nextInt(raceMaps.size()));
     }
 
+    /** Resets all variables to set players back to starting position. */
     public static void resetPlayers() {
         player1.xSpeed = 0;
         player1.ySpeed = 0;
@@ -881,8 +934,15 @@ public class Platformer implements Runnable, KeyListener {
         frame1yOffset = 0;
         frame2xOffset = 0;
         frame2yOffset = 0;
+        player1.facingRight = true;
+        player2.facingRight = true;
     }
 
+    /**
+     * Gets the filepath of the apt scoreboard image.
+     * 
+     * @return the filepath of the apt scoreboard image
+     */
     public static String getScreenImagePath() {
         if (gameState.equals("START")) {
             return "Platformer/Scoreboard/StartGame.png";
@@ -910,6 +970,11 @@ public class Platformer implements Runnable, KeyListener {
         return null;
     }
 
+    /**
+     * Gets the apt scoreboard image.
+     * 
+     * @return the apt scoreboard image
+     */
     public static Image getScreenImage() {
         String path = getScreenImagePath();
         if (path == null)
@@ -919,6 +984,11 @@ public class Platformer implements Runnable, KeyListener {
         return icon != null ? icon.getImage() : null;
     }
 
+    /**
+     * Plays a sound at the specified filepath.
+     * 
+     * @param path the filepath of the sound file to be played
+     */
     public static void playSound(String path) {
         try {
             java.io.File f = new java.io.File(path);
@@ -932,6 +1002,9 @@ public class Platformer implements Runnable, KeyListener {
         }
     }
 
+    /**
+     * Sets all tiles in the level to align with the current raceMap. 
+     */
     public static void setLayout() {
         objects = new GameObject[layout.length][layout[1].length];
         for (int x = 0; x < layout[1].length; x++) {
@@ -956,6 +1029,13 @@ public class Platformer implements Runnable, KeyListener {
         }
     }
 
+    /**
+     * Checks if Object1 collides with Object2.
+     * 
+     * @param Object1 a GameObject
+     * @param Object2 another GameObject
+     * @return true if Object1 intersects with Object2, false otherwise
+     */
     public static boolean checkSingleCollision(GameObject Object1, GameObject Object2) {
         boolean r = false;
         if (Object1.x > Object2.x && Object1.x < Object2.x + Object2.width && Object1.y > Object2.y
@@ -974,6 +1054,12 @@ public class Platformer implements Runnable, KeyListener {
         return r;
     }
 
+    /**
+     * Checks if player collides with a wall.
+     * 
+     * @param player the player being checked
+     * @return if the player collides with a wall
+     */
     public static boolean checkCollision(GameObject player) {
         boolean r = false;
         GameObject wall = null;
@@ -1004,6 +1090,12 @@ public class Platformer implements Runnable, KeyListener {
         return r;
     }
 
+    /**
+     * Checks if player horizontally collides with a wall.
+     * 
+     * @param player the player being checked
+     * @return if the player collides horizontally with a wall
+     */
     public static boolean checkXCollision(GameObject player) {
         boolean r = false;
         GameObject wall = null;
@@ -1032,6 +1124,12 @@ public class Platformer implements Runnable, KeyListener {
         return r;
     }
 
+    /**
+     * Checks if player collides with a floor or ceiling.
+     * 
+     * @param player the player being checked
+     * @return if the player collides with a floor or ceiling
+     */
     public static boolean checkYCollision(GameObject player) {
         boolean r = false;
         GameObject wall = null;
@@ -1060,6 +1158,11 @@ public class Platformer implements Runnable, KeyListener {
         return r;
     }
 
+    /**
+     * Runs Platformer.java, starting the game.
+     * 
+     * @param args not used
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Platformer());
         Timer clock = new Timer(1000 / FPS, new ActionListener() {
