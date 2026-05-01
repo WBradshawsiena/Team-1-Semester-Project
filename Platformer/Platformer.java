@@ -112,9 +112,12 @@ public class Platformer implements Runnable, KeyListener {
         ATTACKING
     }
 
+    /** int that acts as a jump cooldown for player 1, in frames */
     private static int player1JumpTimer = 0;
 
+    /** int that acts as a jump cooldown for player 2, in frames */
     private static int player2JumpTimer = 0;
+
     /**
      * A 2D array that directly represents the layout of the level.
      *
@@ -130,8 +133,12 @@ public class Platformer implements Runnable, KeyListener {
             { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
     };
 
+    /** A HashMap that holds the scoreboard images. */
     private static java.util.HashMap<String, ImageIcon> scoreImages = new java.util.HashMap<>();
 
+    /**
+     * Loads the scoreboard images into scoreImages.
+     */
     private static void loadScoreImages() {
         String[] names = {
                 "StartGame.png", "fire1.png", "fire2.png", "firewin.png",
@@ -143,51 +150,118 @@ public class Platformer implements Runnable, KeyListener {
         }
     }
 
-    // race logic
+    /** String that keeps track of what state the game is in ("START", "RACING", "GAME_OVER", or "ROUND_END") */
     private static String gameState = "START";
+
+    /** Number of rounds player 2 has won. */
     private static int fireWins = 0;
+
+    /** Number of rounds player 1 has won. */
     private static int iceWins = 0;
+
+    /** Holds a sequence of "F"s and "I"s to determine what scoreboard to display after each round. */
     private static String winOrder = "";
+
+    /** Determines how long each scoreboard should be displayed for. */
     private static int screenTimer = 0;
+
+    /** An ArrayList of levels in the form 2D arrays. */
     private static List<int[][]> raceMaps = new ArrayList<>();
+
+    /** Random number generator. */
     private static Random rand = new Random();
 
+    /** Player 1's panel. */
     private static JPanel panel1;
+
+    /** Player 2's panel. */
     private static JPanel panel2;
 
+    /** 2D array of every tile in a level. */
     private static GameObject[][] objects;
 
+    /** Used to temporarily store int values. Used very freely. */
     private static int store;
+
+    /** Determines the size of the windows. */
     private static int scale = 100 * windowSize;
+
+    /** Used to correct operating systems' differing window border sizes. */
     private static int barSize = 28;
 
+    /** Determines how much friction players have when releasing the run button. */
     private static int traction = 1;
 
+    /** int that allows for panel 1 to display GameObjects in different x-coordinates from panel 2. */
     private static int frame1xOffset = 0;
+
+    /** int that allows for panel 1 to display GameObjects in different y-coordinates from panel 2. */
     private static int frame1yOffset = 0;
+
+    /** int that allows for panel 2 to display GameObjects in different x-coordinates from panel 1. */
     private static int frame2xOffset = 0;
+
+    /** int that allows for panel 2 to display GameObjects in different y-coordinates from panel 1. */
     private static int frame2yOffset = 0;
+
+    /** Stores a cooldown for the icicle ability, in frames. */
     private static int icicleTimer = 0;
+
+    /** Stores a cooldown for the spear ability, in frames. */
     private static int spearTimer = 0;
+
+    /** Acts as a countdown for how long player 1 is stunned for when attacked, in frames */
     private static int player1Stunned = 0;
+
+    /** Acts as a countdown for how long player 2 is stunned for when attacked, in frames */
     private static int player2Stunned = 0;
+
+    /** The frame that is displayed by panel 1. */
     private static JFrame frame1;
+
+    /** The frame that is displayed by panel 2. */
     private static JFrame frame2;
 
+    /** True when the W key is held, false otherwise. */
     private static boolean w = false;
+
+    /** True when the A key is held, false otherwise. */
     private static boolean a = false;
+
+    /** True when the S key is held, false otherwise. */
     private static boolean s = false;
+
+    /** True when the D key is held, false otherwise. */
     private static boolean d = false;
+
+    /** True when the up arrow key is held, false otherwise. */
     private static boolean up = false;
+
+    /** True when the left arrow key is held, false otherwise. */
     private static boolean left = false;
+
+    /** True when the down arrow key is held, false otherwise. */
     private static boolean down = false;
+
+    /** True when the right arrow key is held, false otherwise. */
     private static boolean right = false;
 
+    /** True if player 1's left or right sides are touching a wall, false otherwise. */
     private static boolean player1CollisionX = false;
+
+    /** True if player 1's top or bottom sides are touching a floor or ceiling, false otherwise. */
     private static boolean player1CollisionY = false;
+
+    /** True if player 1 is touching a wall, false otherwise. */
     private static boolean player1CollisionXY = false;
+
+    /** True if player 2's left or right sides are touching a wall, false otherwise. */
     private static boolean player2CollisionX = false;
+
+    /** True if player 2's top or bottom sides are touching a floor or ceiling, false otherwise. */
     private static boolean player2CollisionY = false;
+
+    /** True if player2 is touching a wall, false otherwise. */
     private static boolean player2CollisionXY = false;
 
     /** Player 1. */
@@ -365,7 +439,7 @@ public class Platformer implements Runnable, KeyListener {
                 }
 
                 // Paints the end goal.
-                g.drawImage(flag.spriteImage, flag.x - frame1xOffset, flag.y - frame1yOffset, flag.width, flag.height, this);
+                g.drawImage(flag.spriteImage, flag.x - frame2xOffset, flag.y - frame2yOffset, flag.width, flag.height, this);
 
                 // Paints player 1.
                 if (!player1.facingRight) {
