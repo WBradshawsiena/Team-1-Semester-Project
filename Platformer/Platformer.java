@@ -279,6 +279,9 @@ public class Platformer implements Runnable, KeyListener {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
+                // Draw background
+                g.drawImage(new ImageIcon("Platformer/ArtAssets/background.png").getImage(), 0, 0, getWidth(), getHeight(), this);
+
                 // Show Score
                 if (!gameState.equals("RACING")) {
                     g.setColor(Color.BLACK);
@@ -297,7 +300,7 @@ public class Platformer implements Runnable, KeyListener {
 
                 // Paints player 2.
                 if (!player2.facingRight) {
-                    g.drawImage(player2.spriteImage, (player2.x + 100) - frame1xOffset, player2.y - frame1yOffset,
+                    g.drawImage(player2.spriteImage, (player2.x + player1.width) - frame1xOffset, player2.y - frame1yOffset,
                             -player2.width, player2.height, this);
                 } else {
                     g.drawImage(player2.spriteImage, (player2.x) - frame1xOffset, player2.y - frame1yOffset,
@@ -306,7 +309,7 @@ public class Platformer implements Runnable, KeyListener {
 
                 // Paints player 1.
                 if (!player1.facingRight) {
-                    g.drawImage(player1.spriteImage, (player1.x + 100) - frame1xOffset, player1.y - frame1yOffset,
+                    g.drawImage(player1.spriteImage, (player1.x + player1.width) - frame1xOffset, player1.y - frame1yOffset,
                             -player1.width, player1.height, this);
                 } else {
                     g.drawImage(player1.spriteImage, (player1.x) - frame1xOffset, player1.y - frame1yOffset,
@@ -315,7 +318,7 @@ public class Platformer implements Runnable, KeyListener {
 
                 // Paints player 2's spear when he attacks.
                 if (!p2facingRightWhenLaunched) {
-                    g.drawImage(spear.getImage(), (spear.x + 100) - frame1xOffset, spear.y - frame1yOffset, -spear.width, spear.height, this);
+                    g.drawImage(spear.getImage(), (spear.x + spear.width) - frame1xOffset, spear.y - frame1yOffset, -spear.width, spear.height, this);
                 } else {
                     g.drawImage(spear.getImage(), spear.x - frame1xOffset, spear.y - frame1yOffset, spear.width, spear.height, this);
                 }
@@ -331,9 +334,11 @@ public class Platformer implements Runnable, KeyListener {
                 for (int x = 0; x < objects[1].length; x++) {
                     for (int y = 0; y < objects.length; y++) {
                         if (objects[y][x] != null) {
-                            g.setColor(objects[y][x].color);
-                            g.fillRect(objects[y][x].x - frame1xOffset, objects[y][x].y - frame1yOffset,
-                                    objects[y][x].width, objects[y][x].height);
+                            // g.setColor(objects[y][x].color);
+                            // g.fillRect(objects[y][x].x - frame1xOffset, objects[y][x].y - frame1yOffset,
+                                    // objects[y][x].width, objects[y][x].height);
+                            ImageIcon tile = new ImageIcon("Platformer/ArtAssets/brick.png");
+                            g.drawImage(tile.getImage(), objects[y][x].x - frame1xOffset, objects[y][x].y - frame1yOffset, objects[y][x].width, objects[y][x].height, this);
                         }
                     }
                 }
@@ -343,6 +348,9 @@ public class Platformer implements Runnable, KeyListener {
             @Override
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
+
+                // Draw background
+                g.drawImage(new ImageIcon("Platformer/ArtAssets/background.png").getImage(), 0, 0, getWidth(), getHeight(), this);
 
                 // Display Transition Screen
                 if (!gameState.equals("RACING")) {
@@ -362,7 +370,7 @@ public class Platformer implements Runnable, KeyListener {
 
                 // Paints player 1.
                 if (!player1.facingRight) {
-                    g.drawImage(player1.spriteImage, (player1.x + 100) - frame2xOffset, player1.y - frame2yOffset,
+                    g.drawImage(player1.spriteImage, (player1.x + player1.width) - frame2xOffset, player1.y - frame2yOffset,
                             -player1.width, player1.height, this);
                 } else {
                     g.drawImage(player1.spriteImage, (player1.x) - frame2xOffset, player1.y - frame2yOffset,
@@ -371,7 +379,7 @@ public class Platformer implements Runnable, KeyListener {
 
                 // Paints player 2.
                 if (!player2.facingRight) {
-                    g.drawImage(player2.spriteImage, (player2.x + 100) - frame2xOffset, player2.y - frame2yOffset,
+                    g.drawImage(player2.spriteImage, (player2.x + player2.width) - frame2xOffset, player2.y - frame2yOffset,
                             -player2.width, player2.height, this);
                 } else {
                     g.drawImage(player2.spriteImage, (player2.x) - frame2xOffset, player2.y - frame2yOffset,
@@ -380,14 +388,14 @@ public class Platformer implements Runnable, KeyListener {
 
                 // Paints player 1's icicle when he attacks.
                 if (!p1facingRightWhenLaunched) {
-                    g.drawImage(icicle.getImage(), (icicle.x + 100) - frame2xOffset, icicle.y - frame2yOffset, -icicle.width, icicle.height, this);
+                    g.drawImage(icicle.getImage(), (icicle.x + player1.width) - frame2xOffset, icicle.y - frame2yOffset, -icicle.width, icicle.height, this);
                 } else {
                     g.drawImage(icicle.getImage(), icicle.x - frame2xOffset, icicle.y - frame2yOffset, icicle.width, icicle.height, this);
                 }
 
                 // Paints player 2's spear when he attacks.
                 if (!p2facingRightWhenLaunched) {
-                    g.drawImage(spear.getImage(), (spear.x + 100) - frame2xOffset, spear.y - frame2yOffset, -spear.width, spear.height, this);
+                    g.drawImage(spear.getImage(), (spear.x + spear.width) - frame2xOffset, spear.y - frame2yOffset, -spear.width, spear.height, this);
                 } else {
                     g.drawImage(spear.getImage(), spear.x - frame2xOffset, spear.y - frame2yOffset, spear.width, spear.height, this);
                 }
@@ -396,9 +404,11 @@ public class Platformer implements Runnable, KeyListener {
                 for (int x = 0; x < objects[1].length; x++) {
                     for (int y = 0; y < objects.length; y++) {
                         if (objects[y][x] != null) {
-                            g.setColor(objects[y][x].color);
-                            g.fillRect(objects[y][x].x - frame2xOffset, objects[y][x].y - frame2yOffset,
-                                    objects[y][x].width, objects[y][x].height);
+                            // g.setColor(objects[y][x].color);
+                            // g.fillRect(objects[y][x].x - frame2xOffset, objects[y][x].y - frame2yOffset,
+                                    // objects[y][x].width, objects[y][x].height);
+                            ImageIcon tile = new ImageIcon("Platformer/ArtAssets/brick.png");
+                            g.drawImage(tile.getImage(), objects[y][x].x - frame2xOffset, objects[y][x].y - frame2yOffset, objects[y][x].width, objects[y][x].height, this);
                         }
                     }
                 }
@@ -857,7 +867,7 @@ public class Platformer implements Runnable, KeyListener {
                     // Empty
                 } else if (layout[y][x] == 1) {
                     // Wall
-                    objects[y][x] = new GameObject("Wall", x * 100, y * 100);
+                    objects[y][x] = new GameObject("Wall", x * 100, y * 100, 100, 100, "Platformer/ArtAssets/brick.png");
                 } else if (layout[y][x] == 2) {
                     // Spawn players here
                     player1.x = x * 100;
@@ -1308,7 +1318,7 @@ public class Platformer implements Runnable, KeyListener {
                 } else if (player2.state == PlayerState.STUNNED) {
                     player2.setSprite("frozen");
                 } else if (player2.state == PlayerState.ATTACKING) {
-                    player2.setSprite("idle");
+                    player2.setSprite("poke");
                 } else {
                     player2.setSprite("idle");
                 }
