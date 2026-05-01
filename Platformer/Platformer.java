@@ -20,7 +20,7 @@ import javax.swing.*;
  * make progress to accurately describe the functionality of this class.
  *
  * @author Wyatt Bradshaw, Thomas Hammersma, Ayden McCabe, Andrew Pratt
- * @version 1.1
+ * @version 5.1.26
  */
 public class Platformer implements Runnable, KeyListener {
 
@@ -190,27 +190,47 @@ public class Platformer implements Runnable, KeyListener {
     private static boolean player2CollisionY = false;
     private static boolean player2CollisionXY = false;
 
+    /** Player 1. */
     public static GameObject player1;
-    public static final int ATTACK_LENGTH = 13;
-    public static GameObject icicle;
-    public static Map<String, String> p1Sprites = Map.of(
-            "idle", "Platformer/ArtAssets/iceGuyIdle.gif",
-            "jump", "Platformer/ArtAssets/iceGuyJump.gif",
-            "run", "Platformer/ArtAssets/iceGuyRun.gif",
-            "air", "Platformer/ArtAssets/iceGuyAir.gif",
-            "fall", "Platformer/ArtAssets/iceGuyFall.gif",
-            "burned", "Platformer/ArtAssets/iceGuyBurned.gif",
-            "shoot", "Platformer/ArtAssets/iceGuyShoot.gif");
 
+    /** Used to determine whether player 1 was facing left or right when firing his icicle. */
+    public static boolean facingRightWhenLaunched;
+
+    /** The length of player 1's attack animation. */
+    public static final int ATTACK_LENGTH = 13;
+
+    /** The rectangle that acts as Player 1's icicle attack hurtbox. */
+    public static GameObject icicle;
+
+    /** Map that assigns simple keywords to filepaths for player 1's sprite animations. */
+    public static Map<String, String> p1Sprites = Map.of(
+        "idle", "Platformer/ArtAssets/iceGuyIdle.gif",
+        "jump", "Platformer/ArtAssets/iceGuyJump.gif",
+        "run", "Platformer/ArtAssets/iceGuyRun.gif",
+        "air", "Platformer/ArtAssets/iceGuyAir.gif",
+        "fall", "Platformer/ArtAssets/iceGuyFall.gif",
+        "burned", "Platformer/ArtAssets/iceGuyBurned.gif",
+        "shoot", "Platformer/ArtAssets/iceGuyShoot.gif"
+    );
+
+    /** Player 2. */
     public static GameObject player2;
+
+    /** The rectangle that acts as Player 2's spear attack hurtbox. */
     public static GameObject spear;
+
+    /** Map that assigns simple keywords to filepaths for player 2's sprite animations. */
     public static Map<String, String> p2Sprites = Map.of(
-            "idle", "Platformer/ArtAssets/fireGuyIdle.gif",
-            "jump", "Platformer/ArtAssets/fireGuyJump.gif",
-            "run", "Platformer/ArtAssets/fireGuyRun.gif",
-            "air", "Platformer/ArtAssets/fireGuyAir.gif",
-            "fall", "Platformer/ArtAssets/fireGuyFall.gif",
-            "frozen", "Platformer/ArtAssets/fireGuyFreeze.gif");
+        "idle", "Platformer/ArtAssets/fireGuyIdle.gif",
+        "jump", "Platformer/ArtAssets/fireGuyJump.gif",
+        "run", "Platformer/ArtAssets/fireGuyRun.gif",
+        "air", "Platformer/ArtAssets/fireGuyAir.gif",
+        "fall", "Platformer/ArtAssets/fireGuyFall.gif",
+        "frozen", "Platformer/ArtAssets/fireGuyFreeze.gif",
+        "poke", "Platformer/ArtAssets/fireGuyPoke.gif"
+    );
+
+    /** The tile that triggers end-of-level logic when touched. */
     public static GameObject flag;
 
     // private static JButton b;
@@ -230,7 +250,7 @@ public class Platformer implements Runnable, KeyListener {
 
         // Constructor calls for player characters and items
         player1 = new GameObject("Player 1", 0, 0, 100, 100, p1Sprites);
-        icicle = new GameObject("Icicle", -100, -100, 100, 20, Color.CYAN);
+        icicle = new GameObject("Icicle", -100, -100, 100,20, "Platformer/ArtAssets/icicle.png");
         player2 = new GameObject("Player 2", 0, 0, 100, 100, p2Sprites);
         spear = new GameObject("Spear", -100, -100, 200, 20, Color.ORANGE);
         flag = new GameObject("Flag", -100, -100, 20, 100, Color.YELLOW);
@@ -295,8 +315,11 @@ public class Platformer implements Runnable, KeyListener {
                 g.fillRect(spear.x - frame1xOffset, spear.y - frame1yOffset, spear.width, spear.height);
 
                 // Paints player 1's icicle when he attacks.
-                g.setColor(icicle.color);
-                g.fillRect(icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height);
+                if (!facingRightWhenLaunched) {
+                    g.drawImage(icicle.getImage(), (icicle.x + 100) - frame1xOffset, icicle.y - frame1yOffset, -icicle.width, icicle.height, this);
+                } else {
+                    g.drawImage(icicle.getImage(), icicle.x - frame1xOffset, icicle.y - frame1yOffset, icicle.width, icicle.height, this);
+                }
 
                 // Paints the level.
                 for (int x = 0; x < objects[1].length; x++) {
@@ -350,8 +373,11 @@ public class Platformer implements Runnable, KeyListener {
                 }
 
                 // Paints player 1's icicle when he attacks.
-                g.setColor(icicle.color);
-                g.fillRect(icicle.x - frame2xOffset, icicle.y - frame2yOffset, icicle.width, icicle.height);
+                if (!facingRightWhenLaunched) {
+                    g.drawImage(icicle.getImage(), (icicle.x + 100) - frame2xOffset, icicle.y - frame2yOffset, -icicle.width, icicle.height, this);
+                } else {
+                    g.drawImage(icicle.getImage(), icicle.x - frame2xOffset, icicle.y - frame2yOffset, icicle.width, icicle.height, this);
+                }
 
                 // Paints player 2's spear when he attacks.
                 g.setColor(spear.color);
@@ -1006,6 +1032,7 @@ public class Platformer implements Runnable, KeyListener {
                     } else {
                         icicle.xSpeed = -icicleSpeed;
                     }
+                    facingRightWhenLaunched = player1.facingRight;
                 }
                 if (icicle.xSpeed != 0) {
                     if (checkSingleCollision(icicle, player2)) {
