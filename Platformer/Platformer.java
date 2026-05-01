@@ -25,14 +25,14 @@ import javax.swing.*;
 public class Platformer implements Runnable, KeyListener {
 
     /**
-     * Time until player 1 gets stuuned, in frames
+     * Time player 1 gets stunned for, in frames
      */
     private static int player1Stun = 2 * 60;
 
     /**
-     * Time until player 2 gets stuuned, in frames
+     * Time player 2 gets stunned for, in frames
      */
-    private static int player2Stun = 2 * 60;
+    private static int player2Stun = 60;
 
     /**
      * Time until player 1 can fire another icicle, in frames
