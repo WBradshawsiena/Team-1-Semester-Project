@@ -103,7 +103,8 @@ public class Platformer implements Runnable, KeyListener {
         RUNNING,
         JUMPING,
         FALLING,
-        STUNNED
+        STUNNED,
+        ATTACKING
     }
 
     private static int player1JumpTimer = 0;
@@ -189,27 +190,44 @@ public class Platformer implements Runnable, KeyListener {
     private static boolean player2CollisionY = false;
     private static boolean player2CollisionXY = false;
 
+    /** Player 1. */
     public static GameObject player1;
+
+    /** The length of player 1's attack animation. */
+    public static final int ATTACK_LENGTH = 13;
+
+    /** The rectangle that acts as Player 1's icicle attack hurtbox. */
     public static GameObject icicle;
+
+    /** Map that assigns simple keywords to filepaths for player 1's sprite animations. */
     public static Map<String, String> p1Sprites = Map.of(
         "idle", "Platformer/ArtAssets/iceGuyIdle.gif",
         "jump", "Platformer/ArtAssets/iceGuyJump.gif",
         "run", "Platformer/ArtAssets/iceGuyRun.gif",
         "air", "Platformer/ArtAssets/iceGuyAir.gif",
         "fall", "Platformer/ArtAssets/iceGuyFall.gif",
-        "burned", "Platformer/ArtAssets/iceGuyBurned.gif"
+        "burned", "Platformer/ArtAssets/iceGuyBurned.gif",
+        "shoot", "Platformer/ArtAssets/iceGuyShoot.gif"
     );
 
+    /** Player 2. */
     public static GameObject player2;
+
+    /** The rectangle that acts as Player 2's spear attack hurtbox. */
     public static GameObject spear;
+
+    /** Map that assigns simple keywords to filepaths for player 2's sprite animations. */
     public static Map<String, String> p2Sprites = Map.of(
         "idle", "Platformer/ArtAssets/fireGuyIdle.gif",
         "jump", "Platformer/ArtAssets/fireGuyJump.gif",
         "run", "Platformer/ArtAssets/fireGuyRun.gif",
         "air", "Platformer/ArtAssets/fireGuyAir.gif",
         "fall", "Platformer/ArtAssets/fireGuyFall.gif",
-        "frozen", "Platformer/ArtAssets/fireGuyFreeze.gif"
+        "frozen", "Platformer/ArtAssets/fireGuyFreeze.gif",
+        "poke", "Platformer/ArtAssets/fireGuyPoke.gif"
     );
+
+    /** The tile that triggers end-of-level logic when touched. */
     public static GameObject flag;
 
     //private static JButton b;
@@ -359,7 +377,7 @@ public class Platformer implements Runnable, KeyListener {
         PlayerState currentState = player.state;
         PlayerState newState;
 
-        if ((player == player1 && player1Stunned > 0) || (player == player2 && player2Stunned > 0)) {
+        if ((player == player1 && player1Stunned > 0) || (player == player2 && player2Stunned > 0)) { // Stunned
             newState = PlayerState.STUNNED;
             if (currentState != newState) {
                 player.state = newState;
@@ -367,19 +385,27 @@ public class Platformer implements Runnable, KeyListener {
             return jumpTimer;
         }
 
-        if (jumpTimer > 0) {
+        if ((player == player1 && icicleTimer > (icicleCooldown - ATTACK_LENGTH)) || (player == player2 && spearTimer > (spearCooldown - ATTACK_LENGTH))) { // Attacking
+            newState = PlayerState.ATTACKING;
+            if (currentState != newState) {
+                player.state = newState;
+            }
+            return jumpTimer;
+        }
+
+        if (jumpTimer > 0) { // Jumping
             newState = PlayerState.JUMPING;
             jumpTimer--;
-        } else if (!isGrounded) {
+        } else if (!isGrounded) { // Airborne
             if (currentState == PlayerState.JUMPING || currentState == PlayerState.AIRBORNE) {
             newState = PlayerState.AIRBORNE;
-            } else {
+            } else { // Falling (ran off an edge, didn't jump)
                 newState = PlayerState.FALLING;
             }
-        } else {
-            if (Math.abs(player.xSpeed) > 0) {
+        } else { // Grounded
+            if (Math.abs(player.xSpeed) > 0) { // Running
                 newState = PlayerState.RUNNING;
-            } else {
+            } else { // Idle
                 newState = PlayerState.GROUNDED;
             }
         }
@@ -1055,6 +1081,8 @@ public class Platformer implements Runnable, KeyListener {
                     player1.setSprite("fall");
                 } else if (player1.state == PlayerState.STUNNED) {
                     player1.setSprite("burned");
+                } else if (player1.state == PlayerState.ATTACKING) {
+                    player1.setSprite("shoot");
                 } else {
                     player1.setSprite("idle");
                 }
@@ -1068,6 +1096,8 @@ public class Platformer implements Runnable, KeyListener {
                     player2.setSprite("fall");
                 } else if (player2.state == PlayerState.STUNNED) {
                     player2.setSprite("frozen");
+                } else if (player2.state == PlayerState.ATTACKING) {
+                    player2.setSprite("poke");
                 } else {
                     player2.setSprite("idle");
                 }
