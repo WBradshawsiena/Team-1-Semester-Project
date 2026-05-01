@@ -806,6 +806,9 @@ public class Platformer implements Runnable, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             right = true;
         }
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            resetGame();
+        }
     }
 
     /**
@@ -944,6 +947,16 @@ public class Platformer implements Runnable, KeyListener {
         frame2yOffset = 0;
         player1.facingRight = true;
         player2.facingRight = true;
+    }
+
+    /**
+     * Resets the entire program to start a new game.
+     */
+    public static void resetGame() {
+        fireWins = 0;
+        iceWins = 0;
+        winOrder = "";
+        resetPlayers();        
     }
 
     /**
