@@ -246,6 +246,9 @@ public class Platformer implements Runnable, KeyListener {
     /** True when the right arrow key is held, false otherwise. */
     private static boolean right = false;
 
+    /** True when the enter key is held, false otherwise. */
+    private static boolean enter = false;
+
     /** True if player 1's left or right sides are touching a wall, false otherwise. */
     private static boolean player1CollisionX = false;
 
@@ -807,7 +810,7 @@ public class Platformer implements Runnable, KeyListener {
             right = true;
         }
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            resetGame();
+            enter = true;
         }
     }
 
@@ -840,6 +843,9 @@ public class Platformer implements Runnable, KeyListener {
         }
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             right = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            enter = false;
         }
     }
 
@@ -1189,17 +1195,26 @@ public class Platformer implements Runnable, KeyListener {
         Timer clock = new Timer(1000 / FPS, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 // ScoreBoard
                 if (!gameState.equals("RACING")) {
                     if (screenTimer > 0) {
                         screenTimer--;
                         frame1.repaint();
                         frame2.repaint();
-                    } else if (screenTimer == 0 && !gameState.equals("GAME_OVER")) {
+                    } else if (screenTimer <= 0 && !gameState.equals("GAME_OVER")) {
                         loadRandomMap();
                         setLayout();
                         resetPlayers();
+                        gameState = "RACING";
+                        playSound("Platformer/Sound/Start.wav");
+                        frame1.repaint();
+                        frame2.repaint();
+                    } else if (screenTimer <= 0 && gameState.equals("GAME_OVER") && enter) {
+                        iceWins = 0;
+                        fireWins = 0;
+                        loadRandomMap();
+                        setLayout();
+                        resetGame();
                         gameState = "RACING";
                         playSound("Platformer/Sound/Start.wav");
                         frame1.repaint();
